@@ -38,4 +38,11 @@ class TerrainTest extends TestCase
 
         $this->assertEquals($data, $terrain->serialize());
     }
+
+    public function test_it_should_create_default_terrain(): void
+    {
+        $terrain = Terrain::default();
+
+        $this->assertEquals(["height" => 10, "width" => 10], $terrain->serialize());
+    }
 }
