@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace MarsRoverKata\Domain\Terrain;
+namespace MarsRoverKata\Domain\MarsRover;
 
 use Webmozart\Assert\Assert;
 
@@ -22,13 +22,16 @@ class Terrain
         return new self($height, $width);
     }
 
-    public function height(): int
+    public static function fromArray(array $data): self
     {
-        return $this->height;
+        Assert::keyExists($data, 'height');
+        Assert::keyExists($data, 'width');
+
+        return self::create($data['height'], $data['width']);
     }
 
-    public function width(): int
+    public function serialize(): array
     {
-        return $this->width;
+        return ["height" => $this->height, "width" => $this->width];
     }
 }
