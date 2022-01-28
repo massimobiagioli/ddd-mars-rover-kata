@@ -11,7 +11,8 @@ class CreateMarsRover
     public function __construct(
         private UuidInterface $id,
         private string $name,
-        private Terrain $terrain
+        private Terrain $terrain,
+        private \DateTimeImmutable $createdAt
     )
     {
     }
@@ -29,5 +30,10 @@ class CreateMarsRover
     public function getTerrain(): Terrain
     {
         return $this->terrain;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
     }
 }

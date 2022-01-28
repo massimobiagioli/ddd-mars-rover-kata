@@ -39,7 +39,8 @@ class CreateMarsRoverCommand extends Command
         $createMarsRover = new CreateMarsRover(
             $id,
             $name,
-            Terrain::default()
+            Terrain::default(),
+            new \DateTimeImmutable()
         );
 
         $this->commandBus->dispatch($createMarsRover);

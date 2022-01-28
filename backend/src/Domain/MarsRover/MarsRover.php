@@ -12,6 +12,7 @@ class MarsRover extends EventSourcedAggregateRoot
     private UuidInterface $id;
     private string $name;
     private Terrain $terrain;
+    private \DateTimeImmutable $createdAt;
     private ?Coordinates $coordinates;
     private ?Orientation $orientation;
 
@@ -24,14 +25,16 @@ class MarsRover extends EventSourcedAggregateRoot
     public static function create(
         UuidInterface $id,
         string $name,
-        Terrain $terrain
+        Terrain $terrain,
+        \DateTimeImmutable $createdAt
     ): self {
         $marsRover = new self();
         $marsRover->apply(new MarsRoverCreated(
             $id,
             $name,
-            $terrain)
-        );
+            $terrain,
+            $createdAt
+        ));
         return $marsRover;
     }
 
@@ -44,5 +47,6 @@ class MarsRover extends EventSourcedAggregateRoot
         $this->id = $event->getId();
         $this->name = $event->getName();
         $this->terrain = $event->getTerrain();
+        $this->createdAt = $event->getCreatedAt();
     }
 }

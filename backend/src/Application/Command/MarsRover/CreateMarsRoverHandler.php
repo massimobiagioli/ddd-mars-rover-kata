@@ -19,9 +19,9 @@ class CreateMarsRoverHandler
         $marsRover = MarsRover::create(
             $createMarsRover->getId(),
             $createMarsRover->getName(),
-            $createMarsRover->getTerrain()
+            $createMarsRover->getTerrain(),
+            $createMarsRover->getCreatedAt()
         );
-
         $this->marsRoverRepository->store($marsRover);
     }
 }

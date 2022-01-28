@@ -10,9 +10,10 @@ use Ramsey\Uuid\UuidInterface;
 class MarsRoverCreated implements Serializable
 {
     public function __construct(
-        private UuidInterface $id,
-        private string $name,
-        private Terrain $terrain
+        private UuidInterface      $id,
+        private string             $name,
+        private Terrain            $terrain,
+        private \DateTimeImmutable $createdAt
     )
     {
     }
@@ -22,7 +23,8 @@ class MarsRoverCreated implements Serializable
         return [
             'id' => $this->id->toString(),
             'name' => $this->name,
-            'terrain' => $this->terrain->serialize()
+            'terrain' => $this->terrain->serialize(),
+            'createdAt' => $this->createdAt->format(\DateTimeInterface::ISO8601)
         ];
     }
 
@@ -31,7 +33,8 @@ class MarsRoverCreated implements Serializable
         return new self(
             Uuid::fromString($data['id']),
             $data['name'],
-            Terrain::fromArray($data['terrain'])
+            Terrain::fromArray($data['terrain']),
+            \DateTimeImmutable::createFromFormat(\DateTimeInterface::ISO8601, $data['createdAt'])
         );
     }
 
@@ -48,5 +51,10 @@ class MarsRoverCreated implements Serializable
     public function getTerrain(): Terrain
     {
         return $this->terrain;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
     }
 }
