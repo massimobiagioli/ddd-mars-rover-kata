@@ -5,6 +5,7 @@ namespace MarsRoverKata\Application\Command\MarsRover;
 
 use MarsRoverKata\Domain\MarsRover\Terrain;
 use Ramsey\Uuid\UuidInterface;
+use Webmozart\Assert\Assert;
 
 class CreateMarsRover
 {
@@ -15,6 +16,7 @@ class CreateMarsRover
         private \DateTimeImmutable $createdAt
     )
     {
+        Assert::notEmpty($name, 'Name cannot be empty');
     }
 
     public function getId(): UuidInterface
