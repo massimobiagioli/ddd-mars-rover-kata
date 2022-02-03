@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use MarsRoverKata\Application\Command\CommandBus;
 use MarsRoverKata\Kernel;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
@@ -22,6 +23,11 @@ return static function (ContainerConfigurator $configurator) use ($classToFileNa
                 $classToFileName(Kernel::class)
             ]
         );
+
+    $services->alias(
+        id: CommandBus::class,
+        referencedId: \MarsRoverKata\Infrastructure\Symfony\CommandBus::class
+    );
 
     $services->load(
         namespace: 'MarsRoverKata\Application\Command\\',

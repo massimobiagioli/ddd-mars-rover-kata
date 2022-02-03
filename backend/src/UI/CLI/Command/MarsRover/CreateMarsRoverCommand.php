@@ -2,7 +2,7 @@
 
 namespace MarsRoverKata\UI\CLI\Command\MarsRover;
 
-use Broadway\CommandHandling\CommandBus;
+use MarsRoverKata\Application\Command\CommandBus;
 use MarsRoverKata\Application\Command\MarsRover\CreateMarsRover;
 use MarsRoverKata\Domain\MarsRover\Terrain;
 use Ramsey\Uuid\Uuid;
