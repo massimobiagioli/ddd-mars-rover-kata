@@ -24,6 +24,11 @@ return static function (ContainerConfigurator $configurator) use ($classToFileNa
             ]
         );
 
+    $services->load(
+        namespace: 'MarsRoverKata\Application\Query\MarsRover\Projector\\',
+        resource: '../src/Application/Query/MarsRover/Projector/**Projector.php'
+    )->tag('broadway.domain.event_listener');
+
     $services->alias(
         id: CommandBus::class,
         referencedId: \MarsRoverKata\Infrastructure\Symfony\CommandBus::class
@@ -49,4 +54,5 @@ return static function (ContainerConfigurator $configurator) use ($classToFileNa
     $services->alias(\Broadway\EventStore\EventStore::class, 'broadway.event_store');
     $services->alias(\Broadway\EventHandling\EventBus::class, 'broadway.event_handling.event_bus');
     $services->alias(\MarsRoverKata\Domain\MarsRover\MarsRoverRepository::class, \MarsRoverKata\Infrastructure\Broadway\MarsRover\MarsRoverRepositoryImpl::class);
+    $services->alias(\MarsRoverKata\Application\Query\MarsRover\MarsRoverRepository::class, \MarsRoverKata\Infrastructure\Doctrine\ReadModel\MarsRoverRepositoryDoctrineImpl::class);
 };
