@@ -8,7 +8,7 @@ use Ramsey\Uuid\UuidInterface;
 
 interface MarsRoverRepository
 {
-    public function get(UuidInterface $id): MarsRover;
+    public function get(UuidInterface $id): ?MarsRover;
 
     public function store(MarsRover $marsRover): void;
 }

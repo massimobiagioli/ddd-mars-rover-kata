@@ -22,6 +22,14 @@ class Coordinates
         return new self($x, $y);
     }
 
+    public static function fromArray(array $data): self
+    {
+        Assert::keyExists($data, 'x');
+        Assert::keyExists($data, 'y');
+
+        return self::create($data['x'], $data['y']);
+    }
+
     public function serialize(): array
     {
         return ["x" => $this->x, "y" => $this->y];

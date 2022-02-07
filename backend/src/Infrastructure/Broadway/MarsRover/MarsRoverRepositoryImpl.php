@@ -7,10 +7,12 @@ use Broadway\EventHandling\EventBus;
 use Broadway\EventSourcing\AggregateFactory\PublicConstructorAggregateFactory;
 use Broadway\EventSourcing\EventSourcingRepository;
 use Broadway\EventStore\EventStore;
+use Broadway\Repository\AggregateNotFoundException;
 use H2P\Domain\AuctionEngine\Auction;
 use MarsRoverKata\Domain\MarsRover\MarsRover;
 use MarsRoverKata\Domain\MarsRover\MarsRoverRepository;
 use Ramsey\Uuid\UuidInterface;
+use Webmozart\Assert\Assert;
 
 class MarsRoverRepositoryImpl extends EventSourcingRepository implements MarsRoverRepository
 {
@@ -28,13 +30,15 @@ class MarsRoverRepositoryImpl extends EventSourcingRepository implements MarsRov
         );
     }
 
-    public function get(UuidInterface $id): MarsRover
+    public function get(UuidInterface $id): ?MarsRover
     {
-        $marsRover = $this->load($id);
-
-        Assert::isInstanceOf($marsRover, MarsRover::class);
-
-        return $marsRover;
+        try {
+            $marsRover = $this->load($id);
+            Assert::isInstanceOf($marsRover, MarsRover::class);
+            return $marsRover;
+        } catch (AggregateNotFoundException $e) {
+            return null;
+        }
     }
 
     public function store(MarsRover $marsRover): void

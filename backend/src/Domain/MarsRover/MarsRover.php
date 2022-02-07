@@ -5,6 +5,7 @@ namespace MarsRoverKata\Domain\MarsRover;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverCreated;
+use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPlaced;
 use Ramsey\Uuid\UuidInterface;
 
 class MarsRover extends EventSourcedAggregateRoot
@@ -36,6 +37,22 @@ class MarsRover extends EventSourcedAggregateRoot
             $createdAt
         ));
         return $marsRover;
+    }
+
+    public function place(
+        Coordinates $coordinates,
+        Orientation $orientation
+    ): void {
+        $this->coordinates = $coordinates;
+        $this->orientation = $orientation;
+
+        // TODO: Verifica se le coordinate sono valide per il terreno
+
+        $this->apply(new MarsRoverPlaced(
+            $this->id,
+            $coordinates,
+            $orientation
+        ));
     }
 
     public function getAggregateRootId(): string

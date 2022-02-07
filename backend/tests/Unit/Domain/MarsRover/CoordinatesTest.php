@@ -30,4 +30,12 @@ class CoordinatesTest extends TestCase
 
         $this->assertEquals(["x" => 1, "y" => 2], $coordinates->serialize());
     }
+
+    public function test_it_should_create_coordinates_from_array(): void
+    {
+        $data = ["x" => 5, "y" => 8];
+        $coordinates = Coordinates::fromArray($data);
+
+        $this->assertEquals($data, $coordinates->serialize());
+    }
 }
