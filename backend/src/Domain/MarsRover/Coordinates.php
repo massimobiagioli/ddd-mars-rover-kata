@@ -34,4 +34,14 @@ class Coordinates
     {
         return ["x" => $this->x, "y" => $this->y];
     }
+
+    public function x(): int
+    {
+        return $this->x;
+    }
+
+    public function y(): int
+    {
+        return $this->y;
+    }
 }

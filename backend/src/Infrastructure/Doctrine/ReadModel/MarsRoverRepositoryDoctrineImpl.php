@@ -6,7 +6,6 @@ namespace MarsRoverKata\Infrastructure\Doctrine\ReadModel;
 use Doctrine\ORM\EntityManagerInterface;
 use MarsRoverKata\Application\Query\MarsRover\MarsRover;
 use MarsRoverKata\Application\Query\MarsRover\MarsRoverRepository;
-use Webmozart\Assert\Assert;
 
 class MarsRoverRepositoryDoctrineImpl implements MarsRoverRepository
 {
@@ -16,12 +15,12 @@ class MarsRoverRepositoryDoctrineImpl implements MarsRoverRepository
     {
     }
 
-    public function get(string $id): MarsRover
+    public function get(string $id): ?MarsRover
     {
         $marsRover = $this->entityManager->find(MarsRover::class, $id);
-
-        Assert::isInstanceOf($marsRover, MarsRover::class);
-
+        if (!$marsRover) {
+            return null;
+        }
         return $marsRover;
     }
 
