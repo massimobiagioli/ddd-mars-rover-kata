@@ -14,7 +14,7 @@ class MarsRoverProjector extends Projector
 {
     public function __construct(
         private MarsRoverRepository $marsRoverRepository,
-        private LoggerInterface $logger
+        private LoggerInterface     $logger
     )
     {
     }
@@ -24,7 +24,7 @@ class MarsRoverProjector extends Projector
         $marsRover = new MarsRover(
             $event->getId()->toString(),
             $event->getName(),
-            $event->getCreatedAt()
+            \DateTime::createFromImmutable($event->getCreatedAt())
         );
         $this->marsRoverRepository->store($marsRover);
     }
