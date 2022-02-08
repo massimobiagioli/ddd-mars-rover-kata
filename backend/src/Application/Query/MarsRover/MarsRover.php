@@ -7,22 +7,22 @@ use Doctrine\ORM\Mapping as ORM;
 use MarsRoverKata\Domain\MarsRover\Coordinates;
 use MarsRoverKata\Domain\MarsRover\Orientation;
 
-/** @ORM\Entity @ORM\Table(name="read_model_mars_rover")  */
+/** @ORM\Entity @ORM\Table(name="read_model_mars_rover") */
 class MarsRover
 {
     public function __construct(
         /** @ORM\Id() @ORM\Column() */
-        public string $id,
+        public string    $id,
         /** @ORM\Column(type="string") */
-        public string $name,
+        public string    $name,
         /** @ORM\Column(type="datetime") */
-        public \DateTimeImmutable $createdAt,
+        public \DateTime $createdAt,
         /** @ORM\Column(type="integer") */
-        public ?int $coordinate_x = null,
+        public ?int      $coordinate_x = null,
         /** @ORM\Column(type="integer") */
-        public ?int $coordinate_y = null,
+        public ?int      $coordinate_y = null,
         /** @ORM\Column(type="string") */
-        public ?string $orientation = null
+        public ?string   $orientation = null
     )
     {
     }

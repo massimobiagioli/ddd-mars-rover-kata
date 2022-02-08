@@ -40,8 +40,8 @@ class PlaceMarsRoverCommand extends Command
     {
         $id = Uuid::fromString($input->getArgument('id'));
         $coordinates = Coordinates::create(
-            $input->getArgument('x'),
-            $input->getArgument('y')
+            (int)$input->getArgument('x'),
+            (int)$input->getArgument('y')
         );
         $orientation = Orientation::fromString($input->getArgument('orientation'));
 

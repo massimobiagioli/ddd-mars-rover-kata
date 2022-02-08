@@ -18,7 +18,7 @@ class MarsRover extends EventSourcedAggregateRoot
     private ?Coordinates $coordinates;
     private ?Orientation $orientation;
 
-    private function __construct()
+    public function __construct()
     {
         $this->id = Uuid::fromString(Uuid::NIL);
         $this->name = '';
