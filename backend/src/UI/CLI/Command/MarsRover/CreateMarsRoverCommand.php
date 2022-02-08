@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MarsRoverKata\UI\CLI\Command\MarsRover;
 
