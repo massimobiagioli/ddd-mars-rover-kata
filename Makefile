@@ -22,14 +22,14 @@ install: 			## Install the project
 
 	cd backend && symfony console doctrine:database:drop --if-exists --force --env=test
 	cd backend && symfony console doctrine:database:create --env=test
-	cd backend && symfony console orm:schema:update --force --env=test
+	cd backend && symfony console doctrine:schema:update --force --env=test
 	cd backend && symfony console doctrine:migrations:migrate --no-interaction --env=test
 	docker-compose exec -it mysql_test bash -c "mysql -uapp -papp app_test < /var/www/db.sql"
 
 test:				## Launch test
 	cd backend && symfony console doctrine:database:drop --if-exists --force --env=test
 	cd backend && symfony console doctrine:database:create --env=test
-	cd backend && symfony console orm:schema:update --force --env=test
+	cd backend && symfony console doctrine:schema:update --force --env=test
 	cd backend && symfony console doctrine:migrations:migrate --no-interaction --env=test
 	docker-compose exec mysql_test bash -c "mysql -uapp -papp app_test < /var/www/db.sql"
 	cd backend && bin/phpunit

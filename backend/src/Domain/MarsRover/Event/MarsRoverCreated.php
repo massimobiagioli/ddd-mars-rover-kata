@@ -29,13 +29,13 @@ class MarsRoverCreated implements Serializable
         ];
     }
 
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): self
     {
         return new self(
             Uuid::fromString($data['id']),
             $data['name'],
             Terrain::fromArray($data['terrain']),
-            \DateTimeImmutable::createFromFormat(\DateTimeInterface::ISO8601, $data['createdAt'])
+            new \DateTimeImmutable($data['createdAt'])
         );
     }
 

@@ -53,7 +53,7 @@ class PlaceMarsRoverCommand extends Command
 
         $this->commandBus->dispatch($placeMarsRover);
 
-        $output->writeln("Mars Rover with id: $id was placed on coordinates: {$input->getArgument('x')}, {$input->getArgument('x')} with orientation: $input->getArgument('orientation')");
+        $output->writeln("Mars Rover with id: $id was placed on coordinates: {$input->getArgument('x')}, {$input->getArgument('y')} with orientation: {$input->getArgument('orientation')}");
 
         return self::SUCCESS;
     }

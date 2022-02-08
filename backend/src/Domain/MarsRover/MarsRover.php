@@ -6,6 +6,7 @@ namespace MarsRoverKata\Domain\MarsRover;
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverCreated;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPlaced;
+use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class MarsRover extends EventSourcedAggregateRoot
@@ -19,16 +20,21 @@ class MarsRover extends EventSourcedAggregateRoot
 
     private function __construct()
     {
+        $this->id = Uuid::fromString(Uuid::NIL);
+        $this->name = '';
+        $this->terrain = Terrain::default();
+        $this->createdAt = new \DateTimeImmutable();
         $this->coordinates = null;
         $this->orientation = null;
     }
 
     public static function create(
-        UuidInterface $id,
-        string $name,
-        Terrain $terrain,
+        UuidInterface      $id,
+        string             $name,
+        Terrain            $terrain,
         \DateTimeImmutable $createdAt
-    ): self {
+    ): self
+    {
         $marsRover = new self();
         $marsRover->apply(new MarsRoverCreated(
             $id,
@@ -42,7 +48,8 @@ class MarsRover extends EventSourcedAggregateRoot
     public function place(
         Coordinates $coordinates,
         Orientation $orientation
-    ): void {
+    ): void
+    {
         $this->coordinates = $coordinates;
         $this->orientation = $orientation;
 
@@ -60,10 +67,17 @@ class MarsRover extends EventSourcedAggregateRoot
         return $this->id->toString();
     }
 
-    protected function applyMarsRoverCreated(MarsRoverCreated $event) {
+    protected function applyMarsRoverCreated(MarsRoverCreated $event): void
+    {
         $this->id = $event->getId();
         $this->name = $event->getName();
         $this->terrain = $event->getTerrain();
         $this->createdAt = $event->getCreatedAt();
+    }
+
+    protected function applyMarsRoverPlaced(MarsRoverPlaced $event): void
+    {
+        $this->coordinates = $event->getCoordinates();
+        $this->orientation = $event->getOrientation();
     }
 }
