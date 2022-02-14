@@ -6,6 +6,7 @@ namespace MarsRoverKata\Domain\MarsRover;
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverCreated;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPlaced;
+use MarsRoverKata\Domain\MarsRover\Event\PrimitiveCommandSent;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
@@ -59,6 +60,14 @@ class MarsRover extends EventSourcedAggregateRoot
             $this->id,
             $coordinates,
             $orientation
+        ));
+    }
+
+    public function sendCommand(PrimitiveCommand $getPrimitiveCommand): void
+    {
+        $this->apply(new PrimitiveCommandSent(
+            $this->id,
+            $getPrimitiveCommand
         ));
     }
 

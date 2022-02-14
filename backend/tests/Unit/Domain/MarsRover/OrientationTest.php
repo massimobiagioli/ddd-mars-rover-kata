@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class OrientationTest extends TestCase
 {
-    public function test_it_should_throw_exception_if_wrong_width_provided(): void
+    public function test_it_should_throw_exception_if_wrong_orientation_provided(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Value X is not valid for orientation');
