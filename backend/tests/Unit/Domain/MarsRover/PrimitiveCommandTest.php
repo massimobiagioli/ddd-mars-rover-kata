@@ -22,4 +22,12 @@ class PrimitiveCommandTest extends TestCase
 
         $this->assertEquals('F', $primitiveCommand->toString());
     }
+
+    public function test_it_should_check_value_in_array(): void
+    {
+        $primitiveCommand = PrimitiveCommand::fromString('F');
+
+        $this->assertTrue($primitiveCommand->in(['F', 'B']));
+        $this->assertFalse($primitiveCommand->in(['L', 'R']));
+    }
 }

@@ -22,7 +22,9 @@ class MarsRover
         /** @ORM\Column(type="integer") */
         public ?int      $coordinate_y = null,
         /** @ORM\Column(type="string") */
-        public ?string   $orientation = null
+        public ?string   $orientation = null,
+        /** @ORM\Column(type="integer") */
+        public ?int      $km = 0
     )
     {
     }
@@ -37,6 +39,12 @@ class MarsRover
     public function withOrientation(Orientation $orientation): self
     {
         $this->orientation = $orientation->toString();
+        return $this;
+    }
+
+    public function updateKm(int $km): self
+    {
+        $this->km += $km;
         return $this;
     }
 }

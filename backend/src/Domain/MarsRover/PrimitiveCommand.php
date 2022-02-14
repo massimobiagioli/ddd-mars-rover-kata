@@ -24,4 +24,9 @@ class PrimitiveCommand
     {
         return $this->value;
     }
+
+    public function in(array $values): bool
+    {
+        return in_array($this->value, $values);
+    }
 }
