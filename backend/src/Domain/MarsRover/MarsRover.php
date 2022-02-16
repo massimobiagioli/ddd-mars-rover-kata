@@ -9,6 +9,7 @@ use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPlaced;
 use MarsRoverKata\Domain\MarsRover\Event\PrimitiveCommandSent;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
+use Webmozart\Assert\Assert;
 
 class MarsRover extends EventSourcedAggregateRoot
 {
@@ -18,6 +19,97 @@ class MarsRover extends EventSourcedAggregateRoot
     private \DateTimeImmutable $createdAt;
     private ?Coordinates $coordinates;
     private ?Orientation $orientation;
+
+    private const COMMAND_STATUS_MAP = [
+        'F' => [
+            'N' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'N'
+            ],
+            'S' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'N'
+            ],
+            'E' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'N'
+            ],
+            'W' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'N'
+            ]
+        ],
+        'B' => [
+            'N' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'N'
+            ],
+            'S' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'N'
+            ],
+            'E' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'N'
+            ],
+            'W' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'N'
+            ]
+        ],
+        'L' => [
+            'N' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'N'
+            ],
+            'S' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'N'
+            ],
+            'E' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'N'
+            ],
+            'W' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'N'
+            ]
+        ],
+        'R' => [
+            'N' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'N'
+            ],
+            'S' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'N'
+            ],
+            'E' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'N'
+            ],
+            'W' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'N'
+            ]
+        ]
+    ];
 
     public function __construct()
     {
@@ -51,10 +143,11 @@ class MarsRover extends EventSourcedAggregateRoot
         Orientation $orientation
     ): void
     {
-        $this->coordinates = $coordinates;
+        $this->coordinates = Coordinates::create(
+            $this->terrain->capX($coordinates->x()),
+            $this->terrain->capY($coordinates->y())
+        );
         $this->orientation = $orientation;
-
-        // TODO: Verifica se le coordinate sono valide per il terreno
 
         $this->apply(new MarsRoverPlaced(
             $this->id,
@@ -88,5 +181,21 @@ class MarsRover extends EventSourcedAggregateRoot
     {
         $this->coordinates = $event->getCoordinates();
         $this->orientation = $event->getOrientation();
+    }
+
+    protected function applyPrimitiveCommandSent(PrimitiveCommandSent $event): void
+    {
+        Assert::notNull($this->orientation, 'Mars Rover is not placed yed');
+        Assert::notNull($this->coordinates, 'Mars Rover is not placed yed');
+        Assert::keyExists(self::COMMAND_STATUS_MAP, $event->getPrimitiveCommand()->toString(), 'Bad command');
+
+        $commandMapEntry = self::COMMAND_STATUS_MAP[$event->getPrimitiveCommand()->toString()][$this->orientation->toString()];
+
+        $this->coordinates = Coordinates::create(
+            $this->terrain->capX($this->coordinates->x() + $commandMapEntry['offsetX']),
+            $this->terrain->capY($this->coordinates->y() + $commandMapEntry['offsetY'])
+        );
+
+        $this->orientation = Orientation::fromString($commandMapEntry['newOrientation']);
     }
 }

@@ -37,6 +37,16 @@ class Terrain
         return self::create($data['height'], $data['width']);
     }
 
+    public function capX(int $x): int
+    {
+        return $x < 0 ? 0 : (min($x, $this->height));
+    }
+
+    public function capY(int $y): int
+    {
+        return $y < 0 ? 0 : (min($y, $this->width));
+    }
+
     public function serialize(): array
     {
         return ["height" => $this->height, "width" => $this->width];

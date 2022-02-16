@@ -45,4 +45,22 @@ class TerrainTest extends TestCase
 
         $this->assertEquals(["height" => 10, "width" => 10], $terrain->serialize());
     }
+
+    public function test_it_should_cap_coordinates(): void
+    {
+        $terrain = Terrain::create(5, 5);
+        $negativeX = $terrain->capX(-1);
+        $overflowX = $terrain->capX(6);
+        $rightX = $terrain->capX(3);
+        $negativeY = $terrain->capY(-2);
+        $overflowY = $terrain->capY(8);
+        $rightY = $terrain->capY(5);
+
+        $this->assertEquals(0, $negativeX);
+        $this->assertEquals(5, $overflowX);
+        $this->assertEquals(3, $rightX);
+        $this->assertEquals(0, $negativeY);
+        $this->assertEquals(5, $overflowY);
+        $this->assertEquals(5, $rightY);
+    }
 }
