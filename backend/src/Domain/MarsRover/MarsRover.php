@@ -24,57 +24,57 @@ class MarsRover extends EventSourcedAggregateRoot
         'F' => [
             'N' => [
                 'offsetX' => 0,
-                'offsetY' => 0,
+                'offsetY' => 1,
                 'newOrientation' => 'N'
             ],
             'S' => [
                 'offsetX' => 0,
-                'offsetY' => 0,
-                'newOrientation' => 'N'
+                'offsetY' => -1,
+                'newOrientation' => 'S'
             ],
             'E' => [
-                'offsetX' => 0,
+                'offsetX' => 1,
                 'offsetY' => 0,
-                'newOrientation' => 'N'
+                'newOrientation' => 'E'
             ],
             'W' => [
-                'offsetX' => 0,
+                'offsetX' => -1,
                 'offsetY' => 0,
-                'newOrientation' => 'N'
+                'newOrientation' => 'W'
             ]
         ],
         'B' => [
             'N' => [
                 'offsetX' => 0,
-                'offsetY' => 0,
+                'offsetY' => -1,
                 'newOrientation' => 'N'
             ],
             'S' => [
                 'offsetX' => 0,
-                'offsetY' => 0,
-                'newOrientation' => 'N'
+                'offsetY' => 1,
+                'newOrientation' => 'S'
             ],
             'E' => [
-                'offsetX' => 0,
+                'offsetX' => -1,
                 'offsetY' => 0,
-                'newOrientation' => 'N'
+                'newOrientation' => 'E'
             ],
             'W' => [
-                'offsetX' => 0,
+                'offsetX' => 1,
                 'offsetY' => 0,
-                'newOrientation' => 'N'
+                'newOrientation' => 'W'
             ]
         ],
         'L' => [
             'N' => [
                 'offsetX' => 0,
                 'offsetY' => 0,
-                'newOrientation' => 'N'
+                'newOrientation' => 'W'
             ],
             'S' => [
                 'offsetX' => 0,
                 'offsetY' => 0,
-                'newOrientation' => 'N'
+                'newOrientation' => 'E'
             ],
             'E' => [
                 'offsetX' => 0,
@@ -84,24 +84,24 @@ class MarsRover extends EventSourcedAggregateRoot
             'W' => [
                 'offsetX' => 0,
                 'offsetY' => 0,
-                'newOrientation' => 'N'
+                'newOrientation' => 'S'
             ]
         ],
         'R' => [
             'N' => [
                 'offsetX' => 0,
                 'offsetY' => 0,
-                'newOrientation' => 'N'
+                'newOrientation' => 'E'
             ],
             'S' => [
                 'offsetX' => 0,
                 'offsetY' => 0,
-                'newOrientation' => 'N'
+                'newOrientation' => 'W'
             ],
             'E' => [
                 'offsetX' => 0,
                 'offsetY' => 0,
-                'newOrientation' => 'N'
+                'newOrientation' => 'S'
             ],
             'W' => [
                 'offsetX' => 0,
