@@ -294,6 +294,9 @@
     "symfony/amqp-messenger": {
         "version": "v5.4.0"
     },
+    "symfony/browser-kit": {
+        "version": "v5.4.3"
+    },
     "symfony/cache": {
         "version": "v6.0.2"
     },
@@ -326,6 +329,9 @@
     },
     "symfony/doctrine-messenger": {
         "version": "v5.4.0"
+    },
+    "symfony/dom-crawler": {
+        "version": "v5.4.3"
     },
     "symfony/dotenv": {
         "version": "v5.4.2"
