@@ -42,9 +42,9 @@ class MarsRover
         return $this;
     }
 
-    public function updateKm(int $km): self
+    public function withUpdateKm(int $diffKm): self
     {
-        $this->km += $km;
+        $this->km += $diffKm;
         return $this;
     }
 }

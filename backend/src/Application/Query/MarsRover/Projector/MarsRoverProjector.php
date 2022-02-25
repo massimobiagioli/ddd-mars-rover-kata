@@ -63,7 +63,7 @@ class MarsRoverProjector extends Projector
         }
 
         $this->marsRoverRepository->store(
-            $marsRover->updateKm(1)
+            $marsRover->withUpdateKm(1)
         );
     }
 }
