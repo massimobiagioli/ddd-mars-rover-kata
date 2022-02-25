@@ -75,6 +75,11 @@ class SendPrimitiveCommandHandlerTest extends TestCase
             ->get($id)
             ->willReturn($marsRover);
 
+        $marsRover->place(
+            Coordinates::create(1, 3),
+            Orientation::fromString('W')
+        );
+
         $marsRover->getUncommittedEvents();
 
         $logger = $this->prophesize(LoggerInterface::class);

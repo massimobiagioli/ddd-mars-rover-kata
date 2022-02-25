@@ -185,8 +185,8 @@ class MarsRover extends EventSourcedAggregateRoot
 
     protected function applyPrimitiveCommandSent(PrimitiveCommandSent $event): void
     {
-        Assert::notNull($this->orientation, 'Mars Rover is not placed yed');
-        Assert::notNull($this->coordinates, 'Mars Rover is not placed yed');
+        Assert::notNull($this->orientation, 'Mars Rover is not placed yet');
+        Assert::notNull($this->coordinates, 'Mars Rover is not placed yet');
         Assert::keyExists(self::COMMAND_STATUS_MAP, $event->getPrimitiveCommand()->toString(), 'Bad command');
 
         $commandMapEntry = self::COMMAND_STATUS_MAP[$event->getPrimitiveCommand()->toString()][$this->orientation->toString()];
