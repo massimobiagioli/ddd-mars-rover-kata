@@ -6,7 +6,9 @@ namespace MarsRoverKata\Tests\Unit\Application\Query\MarsRover\Projector;
 use MarsRoverKata\Application\Query\MarsRover\MarsRover;
 use MarsRoverKata\Application\Query\MarsRover\MarsRoverRepository;
 use MarsRoverKata\Application\Query\MarsRover\Projector\MarsRoverProjector;
+use MarsRoverKata\Domain\MarsRover\ComplexCommand;
 use MarsRoverKata\Domain\MarsRover\Coordinates;
+use MarsRoverKata\Domain\MarsRover\Event\ComplexCommandSent;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverCreated;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPlaced;
 use MarsRoverKata\Domain\MarsRover\Event\PrimitiveCommandSent;
@@ -222,6 +224,44 @@ class MarsRoverProjectorTest extends TestCase
 
         $marsRoverRepository
             ->store($marsRover->withUpdateKm(1))
+            ->shouldHaveBeenCalledTimes(1);
+    }
+
+    public function test_it_should_handle_mars_rover_complex_command_sent_event(): void
+    {
+        $id = Uuid::uuid4();
+        $name = 'test-rover';
+        $createdAt = new \DateTime();
+
+        $marsRover = new MarsRover(
+            $id->toString(),
+            $name,
+            $createdAt
+        );
+
+        $marsRoverRepository = $this->prophesize(MarsRoverRepository::class);
+        $marsRoverRepository
+            ->get($id->toString())
+            ->willReturn($marsRover);
+
+        $loggerInterface = $this->prophesize(LoggerInterface::class);
+
+        $marsRoverProjector = new MarsRoverProjector(
+            $marsRoverRepository->reveal(),
+            $loggerInterface->reveal()
+        );
+
+        $complexCommand = ComplexCommand::fromString('FFRF');
+
+        $complexCommandSentEvent = new ComplexCommandSent(
+            $id,
+            $complexCommand
+        );
+
+        $marsRoverProjector->applyComplexCommandSent($complexCommandSentEvent);
+
+        $marsRoverRepository
+            ->store($marsRover->withUpdateKm(3))
             ->shouldHaveBeenCalledTimes(1);
     }
 

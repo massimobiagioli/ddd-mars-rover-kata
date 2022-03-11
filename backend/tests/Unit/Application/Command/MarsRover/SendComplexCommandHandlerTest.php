@@ -6,17 +6,14 @@ namespace MarsRoverKata\Tests\Unit\Application\Command\MarsRover;
 use Broadway\Domain\DomainMessage;
 use H2P\Domain\Booking\BookingId;
 use H2P\Infrastructure\Timify\BookingDataDTO;
-use MarsRoverKata\Application\Command\MarsRover\PlaceMarsRover;
-use MarsRoverKata\Application\Command\MarsRover\PlaceMarsRoverHandler;
-use MarsRoverKata\Application\Command\MarsRover\SendPrimitiveCommand;
-use MarsRoverKata\Application\Command\MarsRover\SendPrimitiveCommandHandler;
+use MarsRoverKata\Application\Command\MarsRover\SendComplexCommand;
+use MarsRoverKata\Application\Command\MarsRover\SendComplexCommandHandler;
+use MarsRoverKata\Domain\MarsRover\ComplexCommand;
 use MarsRoverKata\Domain\MarsRover\Coordinates;
-use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPlaced;
-use MarsRoverKata\Domain\MarsRover\Event\PrimitiveCommandSent;
+use MarsRoverKata\Domain\MarsRover\Event\ComplexCommandSent;
 use MarsRoverKata\Domain\MarsRover\MarsRover;
 use MarsRoverKata\Domain\MarsRover\MarsRoverRepository;
 use MarsRoverKata\Domain\MarsRover\Orientation;
-use MarsRoverKata\Domain\MarsRover\PrimitiveCommand;
 use MarsRoverKata\Domain\MarsRover\Terrain;
 use MarsRoverKata\Tests\Fixtures\MarsRover\MarsRoverBuilder;
 use PHPUnit\Framework\TestCase;
@@ -24,7 +21,7 @@ use Prophecy\Argument;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
-class SendPrimitiveCommandHandlerTest extends TestCase
+class SendComplexCommandHandlerTest extends TestCase
 {
     public function test_it_should_throw_exception_if_mars_rover_does_not_exists(): void
     {
@@ -37,15 +34,15 @@ class SendPrimitiveCommandHandlerTest extends TestCase
 
         $logger = $this->prophesize(LoggerInterface::class);
 
-        $sendPrimitiveCommand = new SendPrimitiveCommandHandler(
+        $sendComplexCommandHandler = new SendComplexCommandHandler(
             $marsRoverRepository->reveal(),
             $logger->reveal()
         );
 
-        $sendPrimitiveCommand(
-            new SendPrimitiveCommand(
+        $sendComplexCommandHandler(
+            new SendComplexCommand(
                 $id,
-                PrimitiveCommand::fromString('F')
+                ComplexCommand::fromString('FFFLF')
             )
         );
 
@@ -54,7 +51,7 @@ class SendPrimitiveCommandHandlerTest extends TestCase
             ->shouldHaveBeenCalledTimes(1);
     }
 
-    public function test_it_should_send_primitive_command_to_mars_rover(): void
+    public function test_it_should_send_complex_command_to_mars_rover(): void
     {
         $id = Uuid::uuid4();
         $name = 'test-rover';
@@ -83,25 +80,25 @@ class SendPrimitiveCommandHandlerTest extends TestCase
 
         $logger = $this->prophesize(LoggerInterface::class);
 
-        $primitiveCommand = PrimitiveCommand::fromString('F');
-        $sendPrimitiveCommand = new SendPrimitiveCommand(
+        $complexCommand = ComplexCommand::fromString('FFFR');
+        $sendPrimitiveCommand = new SendComplexCommand(
             $id,
-            $primitiveCommand
+            $complexCommand
         );
 
-        $sendPrimitiveCommandHandler = new SendPrimitiveCommandHandler(
+        $sendComplexCommandHandler = new SendComplexCommandHandler(
             $marsRoverRepository->reveal(),
             $logger->reveal()
         );
 
-        $sendPrimitiveCommandHandler($sendPrimitiveCommand);
+        $sendComplexCommandHandler($sendPrimitiveCommand);
 
         $domainEventStream = $marsRover->getUncommittedEvents();
 
         $expected = [
-            new PrimitiveCommandSent(
+            new ComplexCommandSent(
                 $id,
-                $primitiveCommand
+                $complexCommand
             )
         ];
 

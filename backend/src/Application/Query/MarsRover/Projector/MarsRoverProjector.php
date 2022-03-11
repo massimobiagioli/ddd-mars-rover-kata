@@ -6,6 +6,7 @@ namespace MarsRoverKata\Application\Query\MarsRover\Projector;
 use Broadway\ReadModel\Projector;
 use MarsRoverKata\Application\Query\MarsRover\MarsRover;
 use MarsRoverKata\Application\Query\MarsRover\MarsRoverRepository;
+use MarsRoverKata\Domain\MarsRover\Event\ComplexCommandSent;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverCreated;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPlaced;
 use MarsRoverKata\Domain\MarsRover\Event\PrimitiveCommandSent;
@@ -64,6 +65,28 @@ class MarsRoverProjector extends Projector
 
         $this->marsRoverRepository->store(
             $marsRover->withUpdateKm(1)
+        );
+    }
+
+    public function applyComplexCommandSent(ComplexCommandSent $event): void
+    {
+        $marsRover = $this->marsRoverRepository->get($event->getId()->toString());
+        if ($marsRover === null) {
+            $this->logger->critical("Mars Rover with id: {$event->getId()->toString()} not found!!!");
+            return;
+        }
+
+        $offset = 0;
+        $primitiveCommands = $event->getComplexCommand()->getPrimitiveCommands();
+        foreach ($primitiveCommands as $primitiveCommand) {
+            if (!$primitiveCommand->in(self::COMMANDS_THAT_UPDATES_KM)) {
+                continue;
+            }
+            $offset++;
+        }
+
+        $this->marsRoverRepository->store(
+            $marsRover->withUpdateKm($offset)
         );
     }
 }

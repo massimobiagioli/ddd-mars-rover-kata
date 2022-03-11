@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace MarsRoverKata\Domain\MarsRover;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use MarsRoverKata\Domain\MarsRover\Event\ComplexCommandSent;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverCreated;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPlaced;
 use MarsRoverKata\Domain\MarsRover\Event\PrimitiveCommandSent;
@@ -164,6 +165,14 @@ class MarsRover extends EventSourcedAggregateRoot
         ));
     }
 
+    public function sendComplexCommand(ComplexCommand $getComplexCommand): void
+    {
+        $this->apply(new ComplexCommandSent(
+            $this->id,
+            $getComplexCommand
+        ));
+    }
+
     public function getAggregateRootId(): string
     {
         return $this->id->toString();
@@ -185,11 +194,27 @@ class MarsRover extends EventSourcedAggregateRoot
 
     protected function applyPrimitiveCommandSent(PrimitiveCommandSent $event): void
     {
+        $this->handlePrimitiveCommand($event->getPrimitiveCommand());
+    }
+
+    protected function applyComplexCommandSent(ComplexCommandSent $event): void
+    {
         Assert::notNull($this->orientation, 'Mars Rover is not placed yet');
         Assert::notNull($this->coordinates, 'Mars Rover is not placed yet');
-        Assert::keyExists(self::COMMAND_STATUS_MAP, $event->getPrimitiveCommand()->toString(), 'Bad command');
 
-        $commandMapEntry = self::COMMAND_STATUS_MAP[$event->getPrimitiveCommand()->toString()][$this->orientation->toString()];
+        $primitiveCommands = $event->getComplexCommand()->getPrimitiveCommands();
+        foreach ($primitiveCommands as $primitiveCommand) {
+            $this->handlePrimitiveCommand($primitiveCommand);
+        }
+    }
+
+    private function handlePrimitiveCommand(PrimitiveCommand $primitiveCommand): void
+    {
+        Assert::notNull($this->orientation, 'Mars Rover is not placed yet');
+        Assert::notNull($this->coordinates, 'Mars Rover is not placed yet');
+        Assert::keyExists(self::COMMAND_STATUS_MAP, $primitiveCommand->toString(), 'Bad command');
+
+        $commandMapEntry = self::COMMAND_STATUS_MAP[$primitiveCommand->toString()][$this->orientation->toString()];
 
         $this->coordinates = Coordinates::create(
             $this->terrain->capX($this->coordinates->x() + $commandMapEntry['offsetX']),
