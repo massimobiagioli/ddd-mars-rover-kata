@@ -6,6 +6,7 @@ namespace MarsRoverKata\Application\Query\MarsRover;
 use Doctrine\ORM\Mapping as ORM;
 use MarsRoverKata\Domain\MarsRover\Coordinates;
 use MarsRoverKata\Domain\MarsRover\Orientation;
+use MarsRoverKata\Domain\MarsRover\Status;
 
 /** @ORM\Entity @ORM\Table(name="read_model_mars_rover") */
 class MarsRover
@@ -47,6 +48,12 @@ class MarsRover
     public function withUpdateKm(int $diffKm): self
     {
         $this->km += $diffKm;
+        return $this;
+    }
+
+    public function withStatus(Status $status): self
+    {
+        $this->status = $status->toString();
         return $this;
     }
 }

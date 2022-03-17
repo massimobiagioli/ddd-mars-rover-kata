@@ -14,6 +14,7 @@ use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPlaced;
 use MarsRoverKata\Domain\MarsRover\Event\PrimitiveCommandSent;
 use MarsRoverKata\Domain\MarsRover\Orientation;
 use MarsRoverKata\Domain\MarsRover\PrimitiveCommand;
+use MarsRoverKata\Domain\MarsRover\Status;
 use MarsRoverKata\Domain\MarsRover\Terrain;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -53,7 +54,7 @@ class MarsRoverProjectorTest extends TestCase
         $marsRoverProjector->applyMarsRoverCreated($marsRoverCreatedEvent);
 
         $marsRoverRepository
-            ->store($marsRover)
+            ->store($marsRover->withStatus(Status::created()))
             ->shouldHaveBeenCalledTimes(1);
     }
 
@@ -127,6 +128,7 @@ class MarsRoverProjectorTest extends TestCase
             ->store($marsRover
                 ->withCoordinates($marsRoverPlacedEvent->getCoordinates())
                 ->withOrientation($marsRoverPlacedEvent->getOrientation())
+                ->withStatus(Status::placed())
             )
             ->shouldHaveBeenCalledTimes(1);
     }

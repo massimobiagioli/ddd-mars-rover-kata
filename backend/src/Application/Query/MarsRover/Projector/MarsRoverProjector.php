@@ -10,6 +10,7 @@ use MarsRoverKata\Domain\MarsRover\Event\ComplexCommandSent;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverCreated;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPlaced;
 use MarsRoverKata\Domain\MarsRover\Event\PrimitiveCommandSent;
+use MarsRoverKata\Domain\MarsRover\Status;
 use Psr\Log\LoggerInterface;
 
 class MarsRoverProjector extends Projector
@@ -30,7 +31,7 @@ class MarsRoverProjector extends Projector
             $event->getName(),
             \DateTime::createFromImmutable($event->getCreatedAt())
         );
-        $this->marsRoverRepository->store($marsRover);
+        $this->marsRoverRepository->store($marsRover->withStatus(Status::created()));
     }
 
     public function applyMarsRoverPlaced(MarsRoverPlaced $event): void
@@ -45,6 +46,7 @@ class MarsRoverProjector extends Projector
             $marsRover
                 ->withCoordinates($event->getCoordinates())
                 ->withOrientation($event->getOrientation())
+                ->withStatus(Status::placed())
         );
     }
 
