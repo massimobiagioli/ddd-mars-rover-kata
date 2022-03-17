@@ -18,15 +18,15 @@ class MarsRover
         public string    $name,
         /** @ORM\Column(type="datetime") */
         public \DateTime $createdAt,
-        /** @ORM\Column(type="integer") */
+        /** @ORM\Column(type="integer", nullable="true") */
         public ?int      $coordinate_x = null,
-        /** @ORM\Column(type="integer") */
+        /** @ORM\Column(type="integer", nullable="true") */
         public ?int      $coordinate_y = null,
-        /** @ORM\Column(type="string") */
+        /** @ORM\Column(type="string", nullable="true") */
         public ?string   $orientation = null,
-        /** @ORM\Column(type="integer") */
+        /** @ORM\Column(type="integer", nullable="true") */
         public ?int      $km = 0,
-        /** @ORM\Column(type="string") */
+        /** @ORM\Column(type="string", nullable="true") */
         public ?string    $status = null
     )
     {
