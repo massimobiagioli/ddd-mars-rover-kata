@@ -27,7 +27,7 @@ class MarsRover
         /** @ORM\Column(type="integer", nullable="true") */
         public ?int      $km = 0,
         /** @ORM\Column(type="string", nullable="true") */
-        public ?string    $status = null
+        public ?string   $status = null
     )
     {
     }

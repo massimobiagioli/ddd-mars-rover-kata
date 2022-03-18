@@ -115,4 +115,56 @@ class SendPrimitiveCommandHandlerTest extends TestCase
 
         $marsRoverRepository->store(Argument::type(MarsRover::class))->shouldHaveBeenCalled();
     }
+
+    public function test_it_should_skip_command_if_mars_rover_is_paused(): void
+    {
+        $id = Uuid::uuid4();
+        $name = 'test-rover';
+        $terrain = Terrain::default();
+        $createdAt = new \DateTimeImmutable();
+
+        $marsRoverBuilder = new MarsRoverBuilder();
+        $marsRover = $marsRoverBuilder
+            ->withId($id)
+            ->withName($name)
+            ->withTerrain($terrain)
+            ->withCreatedAt($createdAt)
+            ->get();
+
+        $marsRoverRepository = $this->prophesize(MarsRoverRepository::class);
+        $marsRoverRepository
+            ->get($id)
+            ->willReturn($marsRover);
+
+        $marsRover->place(
+            Coordinates::create(1, 3),
+            Orientation::fromString('W')
+        );
+
+        $marsRover->pause();
+
+        $marsRover->getUncommittedEvents();
+
+        $logger = $this->prophesize(LoggerInterface::class);
+
+        $primitiveCommand = PrimitiveCommand::fromString('F');
+        $sendPrimitiveCommand = new SendPrimitiveCommand(
+            $id,
+            $primitiveCommand
+        );
+
+        $sendPrimitiveCommandHandler = new SendPrimitiveCommandHandler(
+            $marsRoverRepository->reveal(),
+            $logger->reveal()
+        );
+
+        $sendPrimitiveCommandHandler($sendPrimitiveCommand);
+
+        $domainEventStream = $marsRover->getUncommittedEvents();
+        $events = iterator_to_array($domainEventStream->getIterator());
+
+        $this->assertCount(0, $events);
+
+        $marsRoverRepository->store(Argument::type(MarsRover::class))->shouldNotHaveBeenCalled();
+    }
 }

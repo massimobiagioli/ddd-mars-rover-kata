@@ -7,7 +7,7 @@ use MarsRoverKata\Domain\MarsRover\Exception\MarsRoverNotFoundException;
 use MarsRoverKata\Domain\MarsRover\MarsRoverRepository;
 use Psr\Log\LoggerInterface;
 
-class PlaceMarsRoverHandler
+class PauseMarsRoverHandler
 {
     public function __construct(
         private MarsRoverRepository $marsRoverRepository,
@@ -16,23 +16,14 @@ class PlaceMarsRoverHandler
     {
     }
 
-    public function __invoke(PlaceMarsRover $placeMarsRover)
+    public function __invoke(PauseMarsRover $pauseMarsRover)
     {
-        $marsRover = $this->marsRoverRepository->get($placeMarsRover->getId());
+        $marsRover = $this->marsRoverRepository->get($pauseMarsRover->getId());
         if ($marsRover === null) {
-            $this->logger->critical("Mars Rover with id: {$placeMarsRover->getId()->toString()} not found!!!");
+            $this->logger->critical("Mars Rover with id: {$pauseMarsRover->getId()->toString()} not found!!!");
             return;
         }
-
-        if ($marsRover->isPaused()) {
-            return;
-        }
-
-        $marsRover->place(
-            $placeMarsRover->getCoordinates(),
-            $placeMarsRover->getOrientation()
-        );
-
+        $marsRover->pause();
         $this->marsRoverRepository->store($marsRover);
     }
 }

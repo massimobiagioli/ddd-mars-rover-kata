@@ -5,6 +5,7 @@ namespace MarsRoverKata\Tests\Integration\UI;
 
 use MarsRoverKata\Application\Query\MarsRover\MarsRover;
 use MarsRoverKata\Application\Query\MarsRover\MarsRoverRepository;
+use MarsRoverKata\Domain\MarsRover\Status;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -29,7 +30,9 @@ class DashboardTest extends WebTestCase
             'N',
             3
         );
-        $repository->store($marsRover);
+        $repository->store(
+            $marsRover->withStatus(Status::created())
+        );
     }
 
     public function test_it_load_dashboard(): void
@@ -58,7 +61,8 @@ class DashboardTest extends WebTestCase
             "coordinate_x" => 1,
             "coordinate_y" => 2,
             "orientation" => "N",
-            "km" => 3
+            "km" => 3,
+            "status" => "created"
         ], $dashboardData[0]);
     }
 }

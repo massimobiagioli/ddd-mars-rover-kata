@@ -23,9 +23,15 @@ class SendPrimitiveCommandHandler
             $this->logger->critical("Mars Rover with id: {$sendPrimitiveCommand->getId()->toString()} not found!!!");
             return;
         }
+
+        if ($marsRover->isPaused()) {
+            return;
+        }
+
         $marsRover->sendCommand(
             $sendPrimitiveCommand->getPrimitiveCommand()
         );
+
         $this->marsRoverRepository->store($marsRover);
     }
 }

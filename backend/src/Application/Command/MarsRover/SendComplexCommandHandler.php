@@ -23,9 +23,14 @@ class SendComplexCommandHandler
             $this->logger->critical("Mars Rover with id: {$sendComplexCommand->getId()->toString()} not found!!!");
             return;
         }
+        if ($marsRover->isPaused()) {
+            return;
+        }
+
         $marsRover->sendComplexCommand(
             $sendComplexCommand->getComplexCommand()
         );
+
         $this->marsRoverRepository->store($marsRover);
     }
 }

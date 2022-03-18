@@ -6,6 +6,7 @@ namespace MarsRoverKata\Domain\MarsRover;
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use MarsRoverKata\Domain\MarsRover\Event\ComplexCommandSent;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverCreated;
+use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPaused;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPlaced;
 use MarsRoverKata\Domain\MarsRover\Event\PrimitiveCommandSent;
 use Ramsey\Uuid\Uuid;
@@ -20,6 +21,7 @@ class MarsRover extends EventSourcedAggregateRoot
     private \DateTimeImmutable $createdAt;
     private ?Coordinates $coordinates;
     private ?Orientation $orientation;
+    private ?Status $status;
 
     private const COMMAND_STATUS_MAP = [
         'F' => [
@@ -120,6 +122,7 @@ class MarsRover extends EventSourcedAggregateRoot
         $this->createdAt = new \DateTimeImmutable();
         $this->coordinates = null;
         $this->orientation = null;
+        $this->status = null;
     }
 
     public static function create(
@@ -157,20 +160,30 @@ class MarsRover extends EventSourcedAggregateRoot
         ));
     }
 
-    public function sendCommand(PrimitiveCommand $getPrimitiveCommand): void
+    public function sendCommand(PrimitiveCommand $primitiveCommand): void
     {
         $this->apply(new PrimitiveCommandSent(
             $this->id,
-            $getPrimitiveCommand
+            $primitiveCommand
         ));
     }
 
-    public function sendComplexCommand(ComplexCommand $getComplexCommand): void
+    public function sendComplexCommand(ComplexCommand $complexCommand): void
     {
         $this->apply(new ComplexCommandSent(
             $this->id,
-            $getComplexCommand
+            $complexCommand
         ));
+    }
+
+    public function pause(): void
+    {
+        $this->apply(new MarsRoverPaused($this->id));
+    }
+
+    public function isPaused(): bool
+    {
+        return ($this->status === null || $this->status->equalsTo(Status::paused()));
     }
 
     public function getAggregateRootId(): string
@@ -184,12 +197,14 @@ class MarsRover extends EventSourcedAggregateRoot
         $this->name = $event->getName();
         $this->terrain = $event->getTerrain();
         $this->createdAt = $event->getCreatedAt();
+        $this->status = Status::created();
     }
 
     protected function applyMarsRoverPlaced(MarsRoverPlaced $event): void
     {
         $this->coordinates = $event->getCoordinates();
         $this->orientation = $event->getOrientation();
+        $this->status = Status::placed();
     }
 
     protected function applyPrimitiveCommandSent(PrimitiveCommandSent $event): void
@@ -206,6 +221,11 @@ class MarsRover extends EventSourcedAggregateRoot
         foreach ($primitiveCommands as $primitiveCommand) {
             $this->handlePrimitiveCommand($primitiveCommand);
         }
+    }
+
+    protected function applyMarsRoverPaused(MarsRoverPaused $event): void
+    {
+        $this->status = Status::paused();
     }
 
     private function handlePrimitiveCommand(PrimitiveCommand $primitiveCommand): void
