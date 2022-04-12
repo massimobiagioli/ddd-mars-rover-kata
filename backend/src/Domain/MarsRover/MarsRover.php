@@ -8,6 +8,7 @@ use MarsRoverKata\Domain\MarsRover\Event\ComplexCommandSent;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverCreated;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPaused;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPlaced;
+use MarsRoverKata\Domain\MarsRover\Event\MarsRoverResumed;
 use MarsRoverKata\Domain\MarsRover\Event\PrimitiveCommandSent;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -179,6 +180,11 @@ class MarsRover extends EventSourcedAggregateRoot
     public function pause(): void
     {
         $this->apply(new MarsRoverPaused($this->id));
+    }
+
+    public function resume(): void
+    {
+        $this->apply(new MarsRoverResumed($this->id));
     }
 
     public function isPaused(): bool
