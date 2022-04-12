@@ -11,7 +11,7 @@ use MarsRoverKata\Domain\MarsRover\Status;
 /** @ORM\Entity @ORM\Table(name="read_model_mars_rover") */
 class MarsRover
 {
-    private const KM_REPAIR_THRESHOLD = 100;
+    private const KM_REPAIR_THRESHOLD = 10;
 
     public function __construct(
         /** @ORM\Id() @ORM\Column() */

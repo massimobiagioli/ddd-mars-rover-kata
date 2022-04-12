@@ -9,8 +9,8 @@ class Terrain
 {
     private const MIN_HEIGHT = 3;
     private const MIN_WIDTH = 3;
-    private const DEFAULT_HEIGHT = 10;
-    private const DEFAULT_WIDTH = 10;
+    private const DEFAULT_HEIGHT = 20;
+    private const DEFAULT_WIDTH = 20;
 
     private function __construct(private int $height, private int $width)
     {

@@ -118,7 +118,7 @@ class MarsRover extends EventSourcedAggregateRoot
         ]
     ];
 
-    private const KM_REPAIR_THRESHOLD = 100;
+    private const KM_REPAIR_THRESHOLD = 10;
 
     public function __construct()
     {
