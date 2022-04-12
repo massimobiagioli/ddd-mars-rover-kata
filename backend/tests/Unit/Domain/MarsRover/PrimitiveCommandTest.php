@@ -30,4 +30,18 @@ class PrimitiveCommandTest extends TestCase
         $this->assertTrue($primitiveCommand->in(['F', 'B']));
         $this->assertFalse($primitiveCommand->in(['L', 'R']));
     }
+
+    public function test_it_should_updake_km(): void
+    {
+        $primitiveCommand = PrimitiveCommand::fromString('F');
+
+        $this->assertTrue($primitiveCommand->canUpdateKm());
+    }
+
+    public function test_it_should_not_updake_km(): void
+    {
+        $primitiveCommand = PrimitiveCommand::fromString('L');
+
+        $this->assertFalse($primitiveCommand->canUpdateKm());
+    }
 }

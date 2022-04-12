@@ -23,6 +23,9 @@ class MarsRover extends EventSourcedAggregateRoot
     private ?Coordinates $coordinates;
     private ?Orientation $orientation;
     private ?Status $status;
+    private ?int $km;
+    private ?int $kmMaintenance;
+    private ?bool $maintenanceLight;
 
     private const COMMAND_STATUS_MAP = [
         'F' => [
@@ -115,6 +118,8 @@ class MarsRover extends EventSourcedAggregateRoot
         ]
     ];
 
+    private const KM_REPAIR_THRESHOLD = 100;
+
     public function __construct()
     {
         $this->id = Uuid::fromString(Uuid::NIL);
@@ -124,6 +129,9 @@ class MarsRover extends EventSourcedAggregateRoot
         $this->coordinates = null;
         $this->orientation = null;
         $this->status = null;
+        $this->km = 0;
+        $this->kmMaintenance = 0;
+        $this->maintenanceLight = false;
     }
 
     public static function create(
@@ -248,5 +256,25 @@ class MarsRover extends EventSourcedAggregateRoot
         );
 
         $this->orientation = Orientation::fromString($commandMapEntry['newOrientation']);
+
+        $this->updateCounters($primitiveCommand);
+        $this->checkForMaintenance();
     }
+
+    private function updateCounters(PrimitiveCommand $primitiveCommand): void
+    {
+        if ($primitiveCommand->canUpdateKm()) {
+            $this->km++;
+            $this->kmMaintenance++;
+        }
+    }
+
+    private function checkForMaintenance(): void
+    {
+        if ($this->kmMaintenance < self::KM_REPAIR_THRESHOLD) {
+            return;
+        }
+        $this->maintenanceLight = true;
+    }
+
 }

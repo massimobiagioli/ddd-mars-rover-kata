@@ -11,6 +11,8 @@ use MarsRoverKata\Domain\MarsRover\Status;
 /** @ORM\Entity @ORM\Table(name="read_model_mars_rover") */
 class MarsRover
 {
+    private const KM_REPAIR_THRESHOLD = 100;
+
     public function __construct(
         /** @ORM\Id() @ORM\Column() */
         public string    $id,
@@ -26,8 +28,12 @@ class MarsRover
         public ?string   $orientation = null,
         /** @ORM\Column(type="integer", nullable="true") */
         public ?int      $km = 0,
+        /** @ORM\Column(type="integer", nullable="true") */
+        public ?int      $km_maintenance = 0,
         /** @ORM\Column(type="string", nullable="true") */
-        public ?string   $status = null
+        public ?string   $status = null,
+        /** @ORM\Column(type="integer", nullable="true") */
+        public ?int      $maintenance_light = 0,
     )
     {
     }
@@ -45,9 +51,15 @@ class MarsRover
         return $this;
     }
 
-    public function withUpdateKm(int $diffKm): self
+    public function withUpdateKm(int $offset): self
     {
-        $this->km += $diffKm;
+        $this->km += $offset;
+        $this->km_maintenance += $offset;
+
+        if ($this->km_maintenance >= self::KM_REPAIR_THRESHOLD) {
+            $this->maintenance_light = 1;
+        }
+
         return $this;
     }
 

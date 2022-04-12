@@ -6,16 +6,107 @@ namespace MarsRoverKata\Application\Query\MarsRover\Projector;
 use Broadway\ReadModel\Projector;
 use MarsRoverKata\Application\Query\MarsRover\MarsRover;
 use MarsRoverKata\Application\Query\MarsRover\MarsRoverRepository;
+use MarsRoverKata\Domain\MarsRover\Coordinates;
 use MarsRoverKata\Domain\MarsRover\Event\ComplexCommandSent;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverCreated;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPlaced;
 use MarsRoverKata\Domain\MarsRover\Event\PrimitiveCommandSent;
+use MarsRoverKata\Domain\MarsRover\Orientation;
 use MarsRoverKata\Domain\MarsRover\Status;
 use Psr\Log\LoggerInterface;
 
 class MarsRoverProjector extends Projector
 {
-    private const COMMANDS_THAT_UPDATES_KM = ['F', 'B'];
+    private const COMMAND_STATUS_MAP = [
+        'F' => [
+            'N' => [
+                'offsetX' => 0,
+                'offsetY' => 1,
+                'newOrientation' => 'N'
+            ],
+            'S' => [
+                'offsetX' => 0,
+                'offsetY' => -1,
+                'newOrientation' => 'S'
+            ],
+            'E' => [
+                'offsetX' => 1,
+                'offsetY' => 0,
+                'newOrientation' => 'E'
+            ],
+            'W' => [
+                'offsetX' => -1,
+                'offsetY' => 0,
+                'newOrientation' => 'W'
+            ]
+        ],
+        'B' => [
+            'N' => [
+                'offsetX' => 0,
+                'offsetY' => -1,
+                'newOrientation' => 'N'
+            ],
+            'S' => [
+                'offsetX' => 0,
+                'offsetY' => 1,
+                'newOrientation' => 'S'
+            ],
+            'E' => [
+                'offsetX' => -1,
+                'offsetY' => 0,
+                'newOrientation' => 'E'
+            ],
+            'W' => [
+                'offsetX' => 1,
+                'offsetY' => 0,
+                'newOrientation' => 'W'
+            ]
+        ],
+        'L' => [
+            'N' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'W'
+            ],
+            'S' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'E'
+            ],
+            'E' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'N'
+            ],
+            'W' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'S'
+            ]
+        ],
+        'R' => [
+            'N' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'E'
+            ],
+            'S' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'W'
+            ],
+            'E' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'S'
+            ],
+            'W' => [
+                'offsetX' => 0,
+                'offsetY' => 0,
+                'newOrientation' => 'N'
+            ]
+        ]
+    ];
 
     public function __construct(
         private MarsRoverRepository $marsRoverRepository,
@@ -52,21 +143,32 @@ class MarsRoverProjector extends Projector
 
     public function applyPrimitiveCommandSent(PrimitiveCommandSent $event): void
     {
-        if (!$event
-            ->getPrimitiveCommand()
-            ->in(self::COMMANDS_THAT_UPDATES_KM)) {
-
-            return;
-        }
-
         $marsRover = $this->marsRoverRepository->get($event->getId()->toString());
         if ($marsRover === null) {
             $this->logger->critical("Mars Rover with id: {$event->getId()->toString()} not found!!!");
             return;
         }
 
+        if ($marsRover->orientation !== null) {
+            $commandMapEntry = self::COMMAND_STATUS_MAP[$event->getPrimitiveCommand()->toString()][$marsRover->orientation];
+            $newCoordinates = Coordinates::create(
+                $marsRover->coordinate_x + $commandMapEntry['offsetX'],
+                $marsRover->coordinate_y + $commandMapEntry['offsetY']
+            );
+            $marsRover = $marsRover
+                ->withCoordinates($newCoordinates)
+                ->withOrientation(Orientation::fromString($commandMapEntry['newOrientation']));
+        }
+
+        if ($event
+            ->getPrimitiveCommand()
+            ->canUpdateKm()) {
+
+            $marsRover = $marsRover->withUpdateKm(1);
+        }
+
         $this->marsRoverRepository->store(
-            $marsRover->withUpdateKm(1)
+            $marsRover
         );
     }
 
@@ -81,10 +183,20 @@ class MarsRoverProjector extends Projector
         $offset = 0;
         $primitiveCommands = $event->getComplexCommand()->getPrimitiveCommands();
         foreach ($primitiveCommands as $primitiveCommand) {
-            if (!$primitiveCommand->in(self::COMMANDS_THAT_UPDATES_KM)) {
-                continue;
+            if ($marsRover->orientation !== null) {
+                $commandMapEntry = self::COMMAND_STATUS_MAP[$primitiveCommand->toString()][$marsRover->orientation];
+                $newCoordinates = Coordinates::create(
+                    $marsRover->coordinate_x + $commandMapEntry['offsetX'],
+                    $marsRover->coordinate_y + $commandMapEntry['offsetY']
+                );
+                $marsRover = $marsRover
+                    ->withCoordinates($newCoordinates)
+                    ->withOrientation(Orientation::fromString($commandMapEntry['newOrientation']));
             }
-            $offset++;
+
+            if ($primitiveCommand->canUpdateKm()) {
+                $offset++;
+            }
         }
 
         $this->marsRoverRepository->store(

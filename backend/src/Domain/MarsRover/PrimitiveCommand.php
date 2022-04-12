@@ -8,6 +8,7 @@ use Webmozart\Assert\Assert;
 class PrimitiveCommand
 {
     private const ALLOWED_VALUES = ['F', 'B', 'L', 'R'];
+    private const COMMANDS_THAT_UPDATES_KM = ['F', 'B'];
 
     private function __construct(private string $value)
     {
@@ -28,5 +29,10 @@ class PrimitiveCommand
     public function in(array $values): bool
     {
         return in_array($this->value, $values);
+    }
+
+    public function canUpdateKm(): bool
+    {
+        return $this->in(self::COMMANDS_THAT_UPDATES_KM);
     }
 }

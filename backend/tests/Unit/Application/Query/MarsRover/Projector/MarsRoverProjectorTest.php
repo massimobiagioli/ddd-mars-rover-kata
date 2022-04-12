@@ -154,8 +154,8 @@ class MarsRoverProjectorTest extends TestCase
         $marsRoverProjector->applyPrimitiveCommandSent($primitiveCommandSentEvent);
 
         $logger
-            ->critical(Argument::type("string"))
-            ->shouldHaveBeenCalledTimes(0);
+            ->critical("Mars Rover with id: 00000000-0000-0000-0000-000000000000 not found!!!")
+            ->shouldHaveBeenCalledTimes(1);
 
         $marsRoverRepository
             ->store(Argument::type(MarsRover::class))

@@ -62,7 +62,9 @@ class DashboardTest extends WebTestCase
             "coordinate_y" => 2,
             "orientation" => "N",
             "km" => 3,
-            "status" => "created"
+            "status" => "created",
+            "km_maintenance" => 0,
+            "maintenance_light" => 0
         ], $dashboardData[0]);
     }
 }

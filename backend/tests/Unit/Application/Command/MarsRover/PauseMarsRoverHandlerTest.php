@@ -7,6 +7,7 @@ use Broadway\Domain\DomainMessage;
 use H2P\Domain\Booking\BookingId;
 use H2P\Infrastructure\Timify\BookingDataDTO;
 use MarsRoverKata\Application\Command\MarsRover\PauseMarsRover;
+use MarsRoverKata\Application\Command\MarsRover\PauseMarsRoverHandler;
 use MarsRoverKata\Application\Command\MarsRover\ResumeMarsRoverHandler;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPaused;
 use MarsRoverKata\Domain\MarsRover\MarsRover;
@@ -31,7 +32,7 @@ class PauseMarsRoverHandlerTest extends TestCase
 
         $logger = $this->prophesize(LoggerInterface::class);
 
-        $pauseMarsRoverHandler = new ResumeMarsRoverHandler(
+        $pauseMarsRoverHandler = new PauseMarsRoverHandler(
             $marsRoverRepository->reveal(),
             $logger->reveal()
         );
@@ -73,7 +74,7 @@ class PauseMarsRoverHandlerTest extends TestCase
 
         $pauseMarsRoverCommand = new PauseMarsRover($id);
 
-        $pauseMarsRoverCommandHandler = new ResumeMarsRoverHandler(
+        $pauseMarsRoverCommandHandler = new PauseMarsRoverHandler(
             $marsRoverRepository->reveal(),
             $logger->reveal()
         );
