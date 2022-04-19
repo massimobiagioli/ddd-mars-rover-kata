@@ -30,8 +30,8 @@ class MarsRoverCreatedTest extends TestCase
             'id' => $id->toString(),
             'name' => 'rover-1',
             'terrain' => [
-                'height' => 10,
-                'width' => 10
+                'height' => 20,
+                'width' => 20
             ],
             'createdAt' => $createdAt->format(DATE_ISO8601),
         ];

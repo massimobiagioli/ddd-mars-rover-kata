@@ -34,6 +34,8 @@ class MarsRover
         public ?string   $status = null,
         /** @ORM\Column(type="integer", nullable="true") */
         public ?int      $maintenance_light = 0,
+        /** @ORM\Column(type="string", nullable="true") */
+        public ?string   $failure = '',
     )
     {
     }
@@ -66,6 +68,20 @@ class MarsRover
     public function withStatus(Status $status): self
     {
         $this->status = $status->toString();
+        return $this;
+    }
+
+    public function withResetMaintenanceStatus(): self
+    {
+        $this->km_maintenance = 0;
+        $this->maintenance_light = 0;
+        $this->status = Status::placed()->toString();
+        return $this;
+    }
+
+    public function withFailure(string $failure): self
+    {
+        $this->failure = $failure;
         return $this;
     }
 }

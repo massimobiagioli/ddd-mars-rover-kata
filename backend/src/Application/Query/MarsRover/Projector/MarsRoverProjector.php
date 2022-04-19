@@ -9,7 +9,11 @@ use MarsRoverKata\Application\Query\MarsRover\MarsRoverRepository;
 use MarsRoverKata\Domain\MarsRover\Coordinates;
 use MarsRoverKata\Domain\MarsRover\Event\ComplexCommandSent;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverCreated;
+use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPaused;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPlaced;
+use MarsRoverKata\Domain\MarsRover\Event\MarsRoverRepaired;
+use MarsRoverKata\Domain\MarsRover\Event\MarsRoverResumed;
+use MarsRoverKata\Domain\MarsRover\Event\MarsRoverSetBrokenWithFailure;
 use MarsRoverKata\Domain\MarsRover\Event\PrimitiveCommandSent;
 use MarsRoverKata\Domain\MarsRover\Orientation;
 use MarsRoverKata\Domain\MarsRover\Status;
@@ -201,6 +205,60 @@ class MarsRoverProjector extends Projector
 
         $this->marsRoverRepository->store(
             $marsRover->withUpdateKm($offset)
+        );
+    }
+
+    public function applyMarsRoverPaused(MarsRoverPaused $event): void
+    {
+        $marsRover = $this->marsRoverRepository->get($event->getId()->toString());
+        if ($marsRover === null) {
+            $this->logger->critical("Mars Rover with id: {$event->getId()->toString()} not found!!!");
+            return;
+        }
+
+        $this->marsRoverRepository->store(
+            $marsRover->withStatus(Status::paused())
+        );
+    }
+
+    public function applyMarsRoverResumed(MarsRoverResumed $event): void
+    {
+        $marsRover = $this->marsRoverRepository->get($event->getId()->toString());
+        if ($marsRover === null) {
+            $this->logger->critical("Mars Rover with id: {$event->getId()->toString()} not found!!!");
+            return;
+        }
+
+        $this->marsRoverRepository->store(
+            $marsRover->withStatus(Status::placed())
+        );
+    }
+
+    public function applyMarsRoverRepaired(MarsRoverRepaired $event): void
+    {
+        $marsRover = $this->marsRoverRepository->get($event->getId()->toString());
+        if ($marsRover === null) {
+            $this->logger->critical("Mars Rover with id: {$event->getId()->toString()} not found!!!");
+            return;
+        }
+
+        $this->marsRoverRepository->store(
+            $marsRover->withResetMaintenanceStatus()
+        );
+    }
+
+    public function applyMarsRoverSetBrokenWithFailure(MarsRoverSetBrokenWithFailure $event): void
+    {
+        $marsRover = $this->marsRoverRepository->get($event->getId()->toString());
+        if ($marsRover === null) {
+            $this->logger->critical("Mars Rover with id: {$event->getId()->toString()} not found!!!");
+            return;
+        }
+
+        $this->marsRoverRepository->store(
+            $marsRover
+                ->withStatus(Status::broken())
+                ->withFailure($event->getFailure())
         );
     }
 }

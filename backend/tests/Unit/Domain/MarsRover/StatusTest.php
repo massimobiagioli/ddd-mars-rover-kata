@@ -13,9 +13,11 @@ class StatusTest extends TestCase
         $statusCreated = Status::created();
         $statusPlaced = Status::placed();
         $statusPaused = Status::paused();
+        $statusBroken = Status::broken();
 
         $this->assertEquals('created', $statusCreated->toString());
         $this->assertEquals('placed', $statusPlaced->toString());
         $this->assertEquals('paused', $statusPaused->toString());
+        $this->assertEquals('broken', $statusBroken->toString());
     }
 }

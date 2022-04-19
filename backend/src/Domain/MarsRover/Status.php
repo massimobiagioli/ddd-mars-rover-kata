@@ -8,6 +8,7 @@ class Status
     private const CREATED = 'created';
     private const PLACED = 'placed';
     private const PAUSED = 'paused';
+    private const BROKEN = 'broken';
 
     private function __construct(private string $value)
     {
@@ -26,6 +27,11 @@ class Status
     public static function paused(): self
     {
         return new self(self::PAUSED);
+    }
+
+    public static function broken(): self
+    {
+        return new self(self::BROKEN);
     }
 
     public function toString(): string

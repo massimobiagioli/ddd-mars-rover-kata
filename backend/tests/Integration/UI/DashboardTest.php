@@ -64,7 +64,8 @@ class DashboardTest extends WebTestCase
             "km" => 3,
             "status" => "created",
             "km_maintenance" => 0,
-            "maintenance_light" => 0
+            "maintenance_light" => 0,
+            "failure" => ''
         ], $dashboardData[0]);
     }
 }

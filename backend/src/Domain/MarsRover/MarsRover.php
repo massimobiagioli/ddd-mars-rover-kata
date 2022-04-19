@@ -8,7 +8,9 @@ use MarsRoverKata\Domain\MarsRover\Event\ComplexCommandSent;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverCreated;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPaused;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPlaced;
+use MarsRoverKata\Domain\MarsRover\Event\MarsRoverRepaired;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverResumed;
+use MarsRoverKata\Domain\MarsRover\Event\MarsRoverSetBrokenWithFailure;
 use MarsRoverKata\Domain\MarsRover\Event\PrimitiveCommandSent;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -26,6 +28,7 @@ class MarsRover extends EventSourcedAggregateRoot
     private ?int $km;
     private ?int $kmMaintenance;
     private ?bool $maintenanceLight;
+    private ?string $failure;
 
     private const COMMAND_STATUS_MAP = [
         'F' => [
@@ -132,6 +135,7 @@ class MarsRover extends EventSourcedAggregateRoot
         $this->km = 0;
         $this->kmMaintenance = 0;
         $this->maintenanceLight = false;
+        $this->failure = null;
     }
 
     public static function create(
@@ -195,9 +199,24 @@ class MarsRover extends EventSourcedAggregateRoot
         $this->apply(new MarsRoverResumed($this->id));
     }
 
+    public function repair(): void
+    {
+        $this->apply(new MarsRoverRepaired($this->id));
+    }
+
+    public function setBrokenWithFailure(string $failure): void
+    {
+        $this->apply(new MarsRoverSetBrokenWithFailure($this->id, $failure));
+    }
+
     public function isPaused(): bool
     {
         return ($this->status === null || $this->status->equalsTo(Status::paused()));
+    }
+
+    public function hasMaintenanceLightOn(): bool
+    {
+        return ($this->maintenanceLight === true);
     }
 
     public function getAggregateRootId(): string
@@ -240,6 +259,24 @@ class MarsRover extends EventSourcedAggregateRoot
     protected function applyMarsRoverPaused(MarsRoverPaused $event): void
     {
         $this->status = Status::paused();
+    }
+
+    protected function applyMarsRoverResumed(MarsRoverResumed $event): void
+    {
+        $this->status = Status::placed();
+    }
+
+    protected function applyMarsRoverRepaired(MarsRoverRepaired $event): void
+    {
+        $this->status = Status::placed();
+        $this->maintenanceLight = false;
+        $this->kmMaintenance = 0;
+    }
+
+    protected function applyMarsRoverSetBrokenWithFailure(MarsRoverSetBrokenWithFailure $event): void
+    {
+        $this->status = Status::broken();
+        $this->failure = $event->getFailure();
     }
 
     private function handlePrimitiveCommand(PrimitiveCommand $primitiveCommand): void

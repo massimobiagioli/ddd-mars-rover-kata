@@ -43,7 +43,7 @@ class TerrainTest extends TestCase
     {
         $terrain = Terrain::default();
 
-        $this->assertEquals(["height" => 10, "width" => 10], $terrain->serialize());
+        $this->assertEquals(["height" => 20, "width" => 20], $terrain->serialize());
     }
 
     public function test_it_should_cap_coordinates(): void
