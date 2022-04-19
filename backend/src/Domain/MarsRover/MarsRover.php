@@ -29,6 +29,7 @@ class MarsRover extends EventSourcedAggregateRoot
     private ?int $kmMaintenance;
     private ?bool $maintenanceLight;
     private ?string $failure;
+    private ?\DateTimeImmutable $maintenanceDoneAt;
 
     private const COMMAND_STATUS_MAP = [
         'F' => [
@@ -136,6 +137,7 @@ class MarsRover extends EventSourcedAggregateRoot
         $this->kmMaintenance = 0;
         $this->maintenanceLight = false;
         $this->failure = null;
+        $this->maintenanceDoneAt = null;
     }
 
     public static function create(
@@ -199,14 +201,14 @@ class MarsRover extends EventSourcedAggregateRoot
         $this->apply(new MarsRoverResumed($this->id));
     }
 
-    public function repair(): void
+    public function repair(\DateTimeImmutable $date): void
     {
-        $this->apply(new MarsRoverRepaired($this->id));
+        $this->apply(new MarsRoverRepaired($this->id, $date));
     }
 
-    public function setBrokenWithFailure(string $failure): void
+    public function setBrokenWithFailure(string $failure, \DateTimeImmutable $date): void
     {
-        $this->apply(new MarsRoverSetBrokenWithFailure($this->id, $failure));
+        $this->apply(new MarsRoverSetBrokenWithFailure($this->id, $failure, $date));
     }
 
     public function isPaused(): bool
@@ -271,12 +273,14 @@ class MarsRover extends EventSourcedAggregateRoot
         $this->status = Status::placed();
         $this->maintenanceLight = false;
         $this->kmMaintenance = 0;
+        $this->maintenanceDoneAt = $event->getMaintenanceDate();
     }
 
     protected function applyMarsRoverSetBrokenWithFailure(MarsRoverSetBrokenWithFailure $event): void
     {
         $this->status = Status::broken();
         $this->failure = $event->getFailure();
+        $this->maintenanceDoneAt = $event->getMaintenanceDate();
     }
 
     private function handlePrimitiveCommand(PrimitiveCommand $primitiveCommand): void

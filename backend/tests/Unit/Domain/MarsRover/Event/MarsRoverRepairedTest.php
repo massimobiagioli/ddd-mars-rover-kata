@@ -12,13 +12,18 @@ class MarsRoverRepairedTest extends TestCase
     public function test_it_should_serialize_deserialize_event(): void
     {
         $id = Uuid::uuid4();
+        $nowDate = new \DateTimeImmutable();
+        $now = $nowDate->format(DATE_ISO8601);
+        $maintenanceDate = new \DateTimeImmutable($now);
 
         $marsRoverRepaired = new MarsRoverRepaired(
-            $id
+            $id,
+            $maintenanceDate
         );
 
         $expectedSerializedEvent = [
-            'id' => $id->toString()
+            'id' => $id->toString(),
+            'maintenanceDate' => $maintenanceDate->format(DATE_ISO8601),
         ];
 
         $this->assertEquals($expectedSerializedEvent, $marsRoverRepaired->serialize());

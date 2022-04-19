@@ -29,9 +29,12 @@ class RepairMarsRoverHandler
         }
 
         if ($repairMarsRover->getResult()->isOk()) {
-            $marsRover->repair();
+            $marsRover->repair($repairMarsRover->getCreatedAt());
         } else {
-            $marsRover->setBrokenWithFailure($repairMarsRover->getResult()->failure() ?? '');
+            $marsRover->setBrokenWithFailure(
+                $repairMarsRover->getResult()->failure() ?? '',
+                $repairMarsRover->getCreatedAt()
+            );
         }
 
         $this->marsRoverRepository->store($marsRover);

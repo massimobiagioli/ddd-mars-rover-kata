@@ -160,7 +160,8 @@ class RepairMarsRoverHandlerTest extends TestCase
 
         $expected = [
             new MarsRoverRepaired(
-                $id
+                $id,
+                $createdAt
             ),
         ];
 
@@ -228,7 +229,8 @@ class RepairMarsRoverHandlerTest extends TestCase
         $expected = [
             new MarsRoverSetBrokenWithFailure(
                 $id,
-                $failure
+                $failure,
+                $createdAt
             ),
         ];
 

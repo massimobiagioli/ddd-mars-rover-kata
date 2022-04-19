@@ -11,7 +11,8 @@ class MarsRoverSetBrokenWithFailure implements Serializable
 {
     public function __construct(
         private UuidInterface $id,
-        private string $failure
+        private string $failure,
+        private \DateTimeImmutable $maintenanceDate
     )
     {
     }
@@ -20,7 +21,8 @@ class MarsRoverSetBrokenWithFailure implements Serializable
     {
         return [
             'id' => $this->id->toString(),
-            'failure' => $this->failure
+            'failure' => $this->failure,
+            'maintenanceDate' => $this->maintenanceDate->format(\DateTimeInterface::ISO8601)
         ];
     }
 
@@ -28,7 +30,8 @@ class MarsRoverSetBrokenWithFailure implements Serializable
     {
         return new self(
             Uuid::fromString($data['id']),
-            $data['failure']
+            $data['failure'],
+            new \DateTimeImmutable($data['maintenanceDate'])
         );
     }
 
@@ -40,5 +43,10 @@ class MarsRoverSetBrokenWithFailure implements Serializable
     public function getFailure(): string
     {
         return $this->failure;
+    }
+
+    public function getMaintenanceDate(): \DateTimeImmutable
+    {
+        return $this->maintenanceDate;
     }
 }

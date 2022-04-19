@@ -13,15 +13,20 @@ class MarsRoverSetBrokenWithFailureTest extends TestCase
     {
         $id = Uuid::uuid4();
         $failure = 'failure';
+        $nowDate = new \DateTimeImmutable();
+        $now = $nowDate->format(DATE_ISO8601);
+        $maintenanceDate = new \DateTimeImmutable($now);
 
         $marsRoverSetBrokenWithFailure = new MarsRoverSetBrokenWithFailure(
             $id,
-            $failure
+            $failure,
+            $maintenanceDate
         );
 
         $expectedSerializedEvent = [
             'id' => $id->toString(),
             'failure' => $failure,
+            'maintenanceDate' => $maintenanceDate->format(DATE_ISO8601),
         ];
 
         $this->assertEquals($expectedSerializedEvent, $marsRoverSetBrokenWithFailure->serialize());
