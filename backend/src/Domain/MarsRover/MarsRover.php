@@ -5,6 +5,8 @@ namespace MarsRoverKata\Domain\MarsRover;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use MarsRoverKata\Domain\MarsRover\Event\ComplexCommandSent;
+use MarsRoverKata\Domain\MarsRover\Event\MaintenanceLightTurnedOff;
+use MarsRoverKata\Domain\MarsRover\Event\MaintenanceLightTurnedOn;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverCreated;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPaused;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPlaced;
@@ -271,9 +273,10 @@ class MarsRover extends EventSourcedAggregateRoot
     protected function applyMarsRoverRepaired(MarsRoverRepaired $event): void
     {
         $this->status = Status::placed();
-        $this->maintenanceLight = false;
         $this->kmMaintenance = 0;
         $this->maintenanceDoneAt = $event->getMaintenanceDate();
+
+        $this->apply(new MaintenanceLightTurnedOff($this->id));
     }
 
     protected function applyMarsRoverSetBrokenWithFailure(MarsRoverSetBrokenWithFailure $event): void
@@ -315,7 +318,17 @@ class MarsRover extends EventSourcedAggregateRoot
         if ($this->kmMaintenance < self::KM_REPAIR_THRESHOLD) {
             return;
         }
+        $this->apply(new MaintenanceLightTurnedOn($this->id, $this->km ?? 0));
+    }
+
+    protected function applyMaintenanceLightTurnedOn(MaintenanceLightTurnedOn $event): void
+    {
         $this->maintenanceLight = true;
+    }
+
+    protected function applyMaintenanceLightTurnedOff(MaintenanceLightTurnedOff $event): void
+    {
+        $this->maintenanceLight = false;
     }
 
 }

@@ -9,6 +9,8 @@ use H2P\Infrastructure\Timify\BookingDataDTO;
 use MarsRoverKata\Application\Command\MarsRover\RepairMarsRover;
 use MarsRoverKata\Application\Command\MarsRover\RepairMarsRoverHandler;
 use MarsRoverKata\Domain\MarsRover\Coordinates;
+use MarsRoverKata\Domain\MarsRover\Event\MaintenanceLightTurnedOff;
+use MarsRoverKata\Domain\MarsRover\Event\MaintenanceLightTurnedOn;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverRepaired;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverSetBrokenWithFailure;
 use MarsRoverKata\Domain\MarsRover\MarsRover;
@@ -143,7 +145,11 @@ class RepairMarsRoverHandlerTest extends TestCase
             );
         }
 
-        $marsRover->getUncommittedEvents();
+        $uncommittedEvents = $marsRover->getUncommittedEvents();
+        $uncommittedEvents = iterator_to_array($uncommittedEvents->getIterator());
+        $uncommittedEvents = array_map(function (DomainMessage $event): object {
+            return $event->getPayload();
+        }, array_values($uncommittedEvents));
 
         $repairMarsRover = new RepairMarsRover(
             $id,
@@ -159,6 +165,9 @@ class RepairMarsRoverHandlerTest extends TestCase
         $domainEventStream = $marsRover->getUncommittedEvents();
 
         $expected = [
+            new MaintenanceLightTurnedOff(
+                $id
+            ),
             new MarsRoverRepaired(
                 $id,
                 $createdAt
@@ -172,6 +181,10 @@ class RepairMarsRoverHandlerTest extends TestCase
         }, array_values($events));
 
         $this->assertEquals($expected, $events);
+        $this->assertEquals(new MaintenanceLightTurnedOn(
+            $id,
+            12
+        ), $uncommittedEvents[15]);
 
         $marsRoverRepository->store(Argument::type(MarsRover::class))->shouldHaveBeenCalled();
     }
