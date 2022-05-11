@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace MarsRover\Tests\Unit\Domain\Terrain;
 
+use MarsRoverKata\Domain\MarsRover\Obstacles;
 use MarsRoverKata\Domain\MarsRover\Terrain;
 use PHPUnit\Framework\TestCase;
 
@@ -27,23 +28,44 @@ class TerrainTest extends TestCase
     public function test_it_should_create_terrain(): void
     {
         $terrain = Terrain::create(5, 8);
+        $expected = ["height" => 5, "width" => 8, "obstacles" => []];
 
-        $this->assertEquals(["height" => 5, "width" => 8], $terrain->serialize());
+        $this->assertEquals($expected, $terrain->serialize());
     }
 
     public function test_it_should_create_terrain_from_array(): void
     {
         $data = ["height" => 5, "width" => 8];
         $terrain = Terrain::fromArray($data);
+        $expected = ["height" => 5, "width" => 8, "obstacles" => []];
 
-        $this->assertEquals($data, $terrain->serialize());
+        $this->assertEquals($expected, $terrain->serialize());
     }
 
     public function test_it_should_create_default_terrain(): void
     {
         $terrain = Terrain::default();
+        $expected = ["height" => 20, "width" => 20, "obstacles" => []];
 
-        $this->assertEquals(["height" => 20, "width" => 20], $terrain->serialize());
+        $this->assertEquals($expected, $terrain->serialize());
+    }
+
+    public function test_it_should_create_terrain_with_obstacles(): void
+    {
+        $obstaclesData = [
+            ["x" => 1, "y" => 1],
+            ["x" => 1, "y" => 2],
+        ];
+        $obstacles = Obstacles::fromArray($obstaclesData);
+        $terrain = Terrain::create(9, 9)->withObstacles($obstacles);
+
+        $expected = [
+            "height" => 9,
+            "width" => 9,
+            "obstacles" => $obstaclesData
+        ];
+
+        $this->assertEquals($expected, $terrain->serialize());
     }
 
     public function test_it_should_cap_coordinates(): void
@@ -63,4 +85,5 @@ class TerrainTest extends TestCase
         $this->assertEquals(5, $overflowY);
         $this->assertEquals(5, $rightY);
     }
+
 }

@@ -12,16 +12,16 @@ class Terrain
     private const DEFAULT_HEIGHT = 20;
     private const DEFAULT_WIDTH = 20;
 
-    private function __construct(private int $height, private int $width)
+    private function __construct(private int $height, private int $width, private ?Obstacles $obstacles = null)
     {
     }
 
-    public static function create(int $height, int $width): self
+    public static function create(int $height, int $width, ?Obstacles $obstacles = null): self
     {
         Assert::greaterThanEq($height, self::MIN_HEIGHT, 'Height must be at least 3');
         Assert::greaterThanEq($width, self::MIN_WIDTH, 'Width must be at least 3');
 
-        return new self($height, $width);
+        return new self($height, $width, $obstacles);
     }
 
     public static function default(): self
@@ -47,8 +47,17 @@ class Terrain
         return $y < 0 ? 0 : (min($y, $this->width));
     }
 
+    public function withObstacles(Obstacles $obstacles): self
+    {
+        return new self($this->height, $this->width, $obstacles);
+    }
+
     public function serialize(): array
     {
-        return ["height" => $this->height, "width" => $this->width];
+        return [
+            "height" => $this->height,
+            "width" => $this->width,
+            "obstacles" => $this->obstacles ? $this->obstacles->serialize() : []
+        ];
     }
 }
