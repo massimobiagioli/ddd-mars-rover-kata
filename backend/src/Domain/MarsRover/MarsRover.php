@@ -14,6 +14,7 @@ use MarsRoverKata\Domain\MarsRover\Event\MarsRoverRepaired;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverResumed;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverSetBrokenWithFailure;
 use MarsRoverKata\Domain\MarsRover\Event\PrimitiveCommandSent;
+use MarsRoverKata\Domain\MarsRover\Event\TerrainUpdatedWithObstacles;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use Webmozart\Assert\Assert;
@@ -193,6 +194,14 @@ class MarsRover extends EventSourcedAggregateRoot
         ));
     }
 
+    public function updateTerrainWithObstacles(Obstacles $obstacles): void
+    {
+        $this->apply(new TerrainUpdatedWithObstacles(
+            $this->id,
+            $obstacles
+        ));
+    }
+
     public function pause(): void
     {
         $this->apply(new MarsRoverPaused($this->id));
@@ -284,6 +293,11 @@ class MarsRover extends EventSourcedAggregateRoot
         $this->status = Status::broken();
         $this->failure = $event->getFailure();
         $this->maintenanceDoneAt = $event->getMaintenanceDate();
+    }
+
+    protected function applyTerrainUpdatedWithObstacles(TerrainUpdatedWithObstacles $event): void
+    {
+        $this->terrain = $this->terrain->withObstacles($event->getObstacles());
     }
 
     private function handlePrimitiveCommand(PrimitiveCommand $primitiveCommand): void
