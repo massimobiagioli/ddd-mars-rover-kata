@@ -31,7 +31,8 @@ class MarsRoverCreatedTest extends TestCase
             'name' => 'rover-1',
             'terrain' => [
                 'height' => 20,
-                'width' => 20
+                'width' => 20,
+                'obstacles' => [],
             ],
             'createdAt' => $createdAt->format(DATE_ISO8601),
         ];
