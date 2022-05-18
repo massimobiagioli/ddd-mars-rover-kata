@@ -24,4 +24,9 @@ class Orientation
     {
         return $this->value;
     }
+
+    public function equalsTo(Orientation $orientation): bool
+    {
+        return $this->value === $orientation->toString();
+    }
 }

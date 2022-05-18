@@ -44,4 +44,9 @@ class Coordinates
     {
         return $this->y;
     }
+
+    public function equalsTo(Coordinates $coordinates): bool
+    {
+        return $this->x === $coordinates->x && $this->y === $coordinates->y;
+    }
 }
