@@ -18,6 +18,18 @@ class Obstacles
         return new self($coordinatesCollection);
     }
 
+    public function match(int $x, int $y): bool
+    {
+        /** @var Coordinates $coordinates */
+        foreach ($this->data as $coordinates) {
+            if ($coordinates->equalsTo(Coordinates::create($x, $y))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function serialize(): array
     {
         return array_reduce($this->data, function (array $carry, Coordinates $coordinates) {

@@ -52,6 +52,14 @@ class Terrain
         return new self($this->height, $this->width, $obstacles);
     }
 
+    public function obstacleAt(int $x, int $y): bool
+    {
+        if ($this->obstacles === null) {
+            return false;
+        }
+        return $this->obstacles->match($x, $y);
+    }
+
     public function serialize(): array
     {
         return [

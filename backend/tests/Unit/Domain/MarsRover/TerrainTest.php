@@ -66,6 +66,9 @@ class TerrainTest extends TestCase
         ];
 
         $this->assertEquals($expected, $terrain->serialize());
+        $this->assertTrue($terrain->obstacleAt(1, 1));
+        $this->assertTrue($terrain->obstacleAt(1, 2));
+        $this->assertFalse($terrain->obstacleAt(3, 3));
     }
 
     public function test_it_should_cap_coordinates(): void

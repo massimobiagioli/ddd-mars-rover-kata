@@ -8,8 +8,11 @@ use MarsRoverKata\Domain\MarsRover\Orientation;
 
 class Route
 {
+    private array $altRoutes;
+
     private function __construct(private array $data)
     {
+        $this->altRoutes = [];
     }
 
     public static function fromArray(array $data): self
@@ -22,6 +25,12 @@ class Route
         }, $data);
 
         return new self($coordinatesCollection);
+    }
+
+    public function withAltRoutes(array $altRoutes): self
+    {
+        $this->altRoutes = $altRoutes;
+        return $this;
     }
 
     public function serialize(): array
@@ -48,5 +57,10 @@ class Route
     public function steps(): int
     {
         return count($this->data);
+    }
+
+    public function altRoutes(): array
+    {
+        return $this->altRoutes;
     }
 }
