@@ -9,10 +9,12 @@ use MarsRoverKata\Domain\MarsRover\Orientation;
 class Route
 {
     private array $altRoutes;
+    private bool $foundObstacle;
 
     private function __construct(private array $data)
     {
         $this->altRoutes = [];
+        $this->foundObstacle = false;
     }
 
     public static function fromArray(array $data): self
@@ -33,6 +35,12 @@ class Route
         return $this;
     }
 
+    public function withObstacle(): self
+    {
+        $this->foundObstacle = true;
+        return $this;
+    }
+
     public function serialize(): array
     {
         return array_reduce($this->data, function (array $carry, array $entry) {
@@ -46,12 +54,14 @@ class Route
 
     public function destination(): Coordinates
     {
-        return $this->data[count($this->data) - 1]['coordinates'];
+        $index = count($this->data) > 0 ? count($this->data) - 1 : 0;
+        return $this->data[$index]['coordinates'];
     }
 
     public function orientation(): Orientation
     {
-        return $this->data[count($this->data) - 1]['orientation'];
+        $index = count($this->data) > 0 ? count($this->data) - 1 : 0;
+        return $this->data[$index]['orientation'];
     }
 
     public function steps(): int
@@ -61,6 +71,14 @@ class Route
 
     public function altRoutes(): array
     {
-        return $this->altRoutes;
+        return array_reduce($this->altRoutes, function (array $carry, Route $route) {
+            $carry[] = $route->serialize();
+            return $carry;
+        }, []);
+    }
+
+    public function hasObstacle(): bool
+    {
+        return $this->foundObstacle;
     }
 }

@@ -25,6 +25,18 @@ class ComplexCommand
         return new self($primitiveCommands);
     }
 
+    public function insertAt(int $index, string $subCommandValue): self
+    {
+        $newCommand = substr_replace($this->toString(), $subCommandValue, $index, 0);
+        return self::fromString($newCommand);
+    }
+
+    public function removeAt(int $index): self
+    {
+        $newCommand = substr_replace($this->toString(), '', $index, 1);
+        return self::fromString($newCommand);
+    }
+
     public function toString(): string
     {
         return array_reduce(

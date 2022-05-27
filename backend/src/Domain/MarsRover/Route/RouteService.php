@@ -101,20 +101,60 @@ class RouteService
         ]
     ];
 
+    private const TO_THE_RIGHT_COMPLEX_COMMAND = 'RFLFFLFR';
+
     public function calculateRoute(
         Terrain        $terrain,
         Coordinates    $coordinates,
         Orientation    $orientation,
         ComplexCommand $command
-    ): Route {
-        $routeData = [];
-        $routeData[] = [
-            'coordinates' => $coordinates->serialize(),
-            'orientation' => $orientation->toString(),
-        ];
+    ): Route
+    {
+        $simulatedRouteData = $this->routeDataFromComplexCommand(
+            $terrain,
+            $coordinates,
+            $orientation,
+            $command
+        );
+        $simulatedRoute = Route::fromArray($simulatedRouteData['data']);
 
+        if (!$simulatedRouteData['hasObstacle']) {
+            return $simulatedRoute;
+        }
+
+        $altRoutes = $this->findAltRoutes(
+            $terrain,
+            $coordinates,
+            $orientation,
+            $command,
+            $simulatedRouteData
+        );
+
+        return $simulatedRoute
+            ->withObstacle()
+            ->withAltRoutes($altRoutes);
+    }
+
+    private function routeDataFromComplexCommand(
+        Terrain        $terrain,
+        Coordinates    $coordinates,
+        Orientation    $orientation,
+        ComplexCommand $command
+    ): array
+    {
+        $routeData = [];
+        $hasObstacle = false;
+        $index = 0;
+        $obstacleIndex = 0;
         foreach ($command->getPrimitiveCommands() as $primitiveCommand) {
             $commandMapEntry = self::COMMAND_STATUS_MAP[$primitiveCommand->toString()][$orientation->toString()];
+
+            $newX = $terrain->capX($coordinates->x() + $commandMapEntry['offsetX']);
+            $newY = $terrain->capY($coordinates->y() + $commandMapEntry['offsetY']);
+            if ($terrain->obstacleAt($newX, $newY)) {
+                $hasObstacle = true;
+                $obstacleIndex = $index;
+            }
 
             $coordinates = Coordinates::create(
                 $terrain->capX($coordinates->x() + $commandMapEntry['offsetX']),
@@ -127,8 +167,49 @@ class RouteService
                 'coordinates' => $coordinates->serialize(),
                 'orientation' => $orientation->toString()
             ];
+
+            $index++;
         }
 
-        return Route::fromArray($routeData);
+        return [
+            'data' => $routeData,
+            'hasObstacle' => $hasObstacle,
+            'obstacleIndex' => $hasObstacle ? $obstacleIndex : -1
+        ];
     }
+
+    protected function findAltRoutes(
+        Terrain        $terrain,
+        Coordinates    $coordinates,
+        Orientation    $orientation,
+        ComplexCommand $command,
+        array          $simulatedRouteData
+    ): array
+    {
+        $altCommands = [
+            self::TO_THE_RIGHT_COMPLEX_COMMAND
+        ];
+
+        $altRoutes = [];
+        foreach ($altCommands as $altCommand) {
+            $newCommand = $command
+                ->removeAt($simulatedRouteData['obstacleIndex'])
+                ->removeAt($simulatedRouteData['obstacleIndex'] + 1)
+                ->insertAt($simulatedRouteData['obstacleIndex'], $altCommand);
+
+            $altRouteData = $this->routeDataFromComplexCommand(
+                $terrain,
+                $coordinates,
+                $orientation,
+                $newCommand
+            );
+
+            if (!$altRouteData['hasObstacle']) {
+                $altRoutes[] = Route::fromArray($altRouteData['data']);
+            }
+        }
+
+        return $altRoutes;
+    }
+
 }

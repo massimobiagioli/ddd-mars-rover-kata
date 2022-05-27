@@ -24,7 +24,8 @@ class RouteServiceTest extends TestCase
                 ComplexCommand::fromString('L'),
                 Coordinates::create(0, 0),
                 Orientation::fromString('W'),
-                2,
+                1,
+                false,
                 []
             ],
             [
@@ -34,7 +35,8 @@ class RouteServiceTest extends TestCase
                 ComplexCommand::fromString('F'),
                 Coordinates::create(0, 1),
                 Orientation::fromString('N'),
-                2,
+                1,
+                false,
                 []
             ],
             [
@@ -44,7 +46,8 @@ class RouteServiceTest extends TestCase
                 ComplexCommand::fromString('FFFF'),
                 Coordinates::create(0, 4),
                 Orientation::fromString('N'),
-                5,
+                4,
+                false,
                 []
             ],
             [
@@ -54,7 +57,8 @@ class RouteServiceTest extends TestCase
                 ComplexCommand::fromString('FLFLFLL'),
                 Coordinates::create(0, 0),
                 Orientation::fromString('N'),
-                8,
+                7,
+                false,
                 []
             ],
             [
@@ -66,7 +70,8 @@ class RouteServiceTest extends TestCase
                 ComplexCommand::fromString('FFF'),
                 Coordinates::create(0, 3),
                 Orientation::fromString('N'),
-                4,
+                3,
+                false,
                 [
                     [
                         [
@@ -90,16 +95,16 @@ class RouteServiceTest extends TestCase
                             'orientation' => 'N'
                         ],
                         [
-                            'coordinates' => ['x' => 1, 'y' => 3],
+                            'coordinates' => ['x' => 1, 'y' => 2],
+                            'orientation' => 'W'
+                        ],
+                        [
+                            'coordinates' => ['x' => 0, 'y' => 2],
+                            'orientation' => 'W'
+                        ],
+                        [
+                            'coordinates' => ['x' => 0, 'y' => 2],
                             'orientation' => 'N'
-                        ],
-                        [
-                            'coordinates' => ['x' => 1, 'y' => 3],
-                            'orientation' => 'W'
-                        ],
-                        [
-                            'coordinates' => ['x' => 0, 'y' => 3],
-                            'orientation' => 'W'
                         ],
                         [
                             'coordinates' => ['x' => 0, 'y' => 3],
@@ -122,6 +127,7 @@ class RouteServiceTest extends TestCase
         Coordinates $expectedDestination,
         Orientation $expectedOrientation,
         int $steps,
+        bool $hasObstacle,
         array $altRoutes
     ): void {
         $routeService = new RouteService();
@@ -135,6 +141,7 @@ class RouteServiceTest extends TestCase
         $this->assertTrue($route->destination()->equalsTo($expectedDestination));
         $this->assertTrue($route->orientation()->equalsTo($expectedOrientation));
         $this->assertEquals($steps, $route->steps());
+        $this->assertEquals($hasObstacle, $route->hasObstacle());
         $this->assertEquals($altRoutes, $route->altRoutes());
     }
 }
