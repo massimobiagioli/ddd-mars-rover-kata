@@ -71,7 +71,7 @@ class RouteServiceTest extends TestCase
                 Coordinates::create(0, 3),
                 Orientation::fromString('N'),
                 3,
-                false,
+                true,
                 [
                     [
                         [

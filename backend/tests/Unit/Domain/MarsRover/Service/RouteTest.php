@@ -30,7 +30,7 @@ class RouteTest extends TestCase
             ['coordinates' => ["x" => 1, "y" => 2], 'orientation' => 'N'],
             ['coordinates' => ["x" => 2, "y" => 3], 'orientation' => 'E'],
         ];
-        $altRoutes = [
+        $altRoutesData = [
             [
                 [
                     'coordinates' => ['x' => 0, 'y' => 0],
@@ -70,6 +70,11 @@ class RouteTest extends TestCase
                 ],
             ]
         ];
+
+        $altRoutes = array_map(function ($routeData) {
+            return Route::fromArray($routeData);
+        }, $altRoutesData);
+
         $route = Route::fromArray($data)
             ->withObstacle()
             ->withAltRoutes($altRoutes);
@@ -78,7 +83,7 @@ class RouteTest extends TestCase
         $this->assertEquals(["x" => 2, "y" => 3], $route->destination()->serialize());
         $this->assertEquals('E', $route->orientation()->toString());
         $this->assertEquals(2, $route->steps());
-        $this->assertEquals($altRoutes, $route->altRoutes());
+        $this->assertEquals($altRoutesData, $route->altRoutes());
         $this->assertTrue($route->hasObstacle());
     }
 }
