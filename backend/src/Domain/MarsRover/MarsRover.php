@@ -13,6 +13,8 @@ use MarsRoverKata\Domain\MarsRover\Event\MarsRoverPlaced;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverRepaired;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverResumed;
 use MarsRoverKata\Domain\MarsRover\Event\MarsRoverSetBrokenWithFailure;
+use MarsRoverKata\Domain\MarsRover\Event\ObstacleDetected;
+use MarsRoverKata\Domain\MarsRover\Event\ObstacleDetectedLightTurnedOn;
 use MarsRoverKata\Domain\MarsRover\Event\PrimitiveCommandSent;
 use MarsRoverKata\Domain\MarsRover\Event\TerrainUpdatedWithObstacles;
 use Ramsey\Uuid\Uuid;
@@ -33,6 +35,7 @@ class MarsRover extends EventSourcedAggregateRoot
     private ?bool $maintenanceLight;
     private ?string $failure;
     private ?\DateTimeImmutable $maintenanceDoneAt;
+    private ?bool $obstacleDetectedLight;
 
     private const COMMAND_STATUS_MAP = [
         'F' => [
@@ -141,6 +144,7 @@ class MarsRover extends EventSourcedAggregateRoot
         $this->maintenanceLight = false;
         $this->failure = null;
         $this->maintenanceDoneAt = null;
+        $this->obstacleDetectedLight = false;
     }
 
     public static function create(
@@ -217,6 +221,11 @@ class MarsRover extends EventSourcedAggregateRoot
         $this->apply(new MarsRoverRepaired($this->id, $date));
     }
 
+    public function detectObstacle(): void
+    {
+        $this->apply(new ObstacleDetected($this->id));
+    }
+
     public function setBrokenWithFailure(string $failure, \DateTimeImmutable $date): void
     {
         $this->apply(new MarsRoverSetBrokenWithFailure($this->id, $failure, $date));
@@ -288,6 +297,16 @@ class MarsRover extends EventSourcedAggregateRoot
         $this->apply(new MaintenanceLightTurnedOff($this->id));
     }
 
+    protected function applyObstacleDetected(ObstacleDetected $event): void
+    {
+        $this->apply(new ObstacleDetectedLightTurnedOn($this->id));
+    }
+
+    protected function applyObstacleDetectedLightTurnedOn(ObstacleDetectedLightTurnedOn $event): void
+    {
+        $this->obstacleDetectedLight = true;
+    }
+
     protected function applyMarsRoverSetBrokenWithFailure(MarsRoverSetBrokenWithFailure $event): void
     {
         $this->status = Status::broken();
@@ -343,6 +362,21 @@ class MarsRover extends EventSourcedAggregateRoot
     protected function applyMaintenanceLightTurnedOff(MaintenanceLightTurnedOff $event): void
     {
         $this->maintenanceLight = false;
+    }
+
+    public function terrain(): Terrain
+    {
+        return $this->terrain;
+    }
+
+    public function coordinates(): ?Coordinates
+    {
+        return $this->coordinates;
+    }
+
+    public function orientation(): ?Orientation
+    {
+        return $this->orientation;
     }
 
 }

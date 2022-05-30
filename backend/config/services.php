@@ -51,6 +51,11 @@ return static function (ContainerConfigurator $configurator) use ($classToFileNa
         resource: '../src/Application/Query/**/**Repository.php'
     );
 
+    $services->load(
+        namespace: 'MarsRoverKata\Domain\MarsRover\Route\\',
+        resource: '../src/Domain/MarsRover/Route/**Service.php'
+    );
+
     $services->alias(\Broadway\EventStore\EventStore::class, 'broadway.event_store');
     $services->alias(\Broadway\EventHandling\EventBus::class, 'broadway.event_handling.event_bus');
     $services->alias(\MarsRoverKata\Domain\MarsRover\MarsRoverRepository::class, \MarsRoverKata\Infrastructure\Broadway\MarsRover\MarsRoverRepositoryImpl::class);
