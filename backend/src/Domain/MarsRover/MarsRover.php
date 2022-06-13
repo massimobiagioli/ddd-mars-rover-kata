@@ -17,6 +17,7 @@ use MarsRoverKata\Domain\MarsRover\Event\ObstacleDetected;
 use MarsRoverKata\Domain\MarsRover\Event\ObstacleDetectedLightTurnedOn;
 use MarsRoverKata\Domain\MarsRover\Event\PrimitiveCommandSent;
 use MarsRoverKata\Domain\MarsRover\Event\TerrainUpdatedWithObstacles;
+use MarsRoverKata\Domain\MarsRover\Route\Route;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use Webmozart\Assert\Assert;
@@ -221,9 +222,9 @@ class MarsRover extends EventSourcedAggregateRoot
         $this->apply(new MarsRoverRepaired($this->id, $date));
     }
 
-    public function detectObstacle(): void
+    public function detectObstacle(Route $route): void
     {
-        $this->apply(new ObstacleDetected($this->id));
+        $this->apply(new ObstacleDetected($this->id, $route));
     }
 
     public function setBrokenWithFailure(string $failure, \DateTimeImmutable $date): void

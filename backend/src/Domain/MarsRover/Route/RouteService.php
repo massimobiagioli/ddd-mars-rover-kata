@@ -146,6 +146,7 @@ class RouteService
         $hasObstacle = false;
         $index = 0;
         $obstacleIndex = 0;
+        $complexCommandData = '';
         foreach ($command->getPrimitiveCommands() as $primitiveCommand) {
             $commandMapEntry = self::COMMAND_STATUS_MAP[$primitiveCommand->toString()][$orientation->toString()];
 
@@ -163,9 +164,12 @@ class RouteService
 
             $orientation = Orientation::fromString($commandMapEntry['newOrientation']);
 
+            $complexCommandData .= $primitiveCommand->toString();
+
             $routeData[] = [
                 'coordinates' => $coordinates->serialize(),
-                'orientation' => $orientation->toString()
+                'orientation' => $orientation->toString(),
+                'complexCommandData' => $complexCommandData
             ];
 
             $index++;

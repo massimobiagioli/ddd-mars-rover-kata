@@ -47,7 +47,7 @@ class SendComplexCommandHandler
         );
 
         if ($route->hasObstacle()) {
-            $marsRover->detectObstacle();
+            $marsRover->detectObstacle($route);
             $this->logger->warning("Mars Rover with id: {$sendComplexCommand->getId()->toString()} has detected an obstacle!!!");
             $this->marsRoverRepository->store($marsRover);
             return;

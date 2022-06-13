@@ -312,6 +312,7 @@ class SendComplexCommandHandlerTest extends TestCase
             ),
             new ObstacleDetected(
                 $id,
+                $route
             ),
         ];
 

@@ -307,6 +307,7 @@ class SendPrimitiveCommandHandlerTest extends TestCase
             ),
             new ObstacleDetected(
                 $id,
+                $route
             ),
         ];
 

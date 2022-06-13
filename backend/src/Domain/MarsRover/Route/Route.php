@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace MarsRoverKata\Domain\MarsRover\Route;
 
+use MarsRoverKata\Domain\MarsRover\ComplexCommand;
 use MarsRoverKata\Domain\MarsRover\Coordinates;
 use MarsRoverKata\Domain\MarsRover\Orientation;
 
@@ -56,6 +57,14 @@ class Route
     {
         $index = count($this->data) > 0 ? count($this->data) - 1 : 0;
         return $this->data[$index]['coordinates'];
+    }
+
+    public function complexCommand(): ComplexCommand
+    {
+        $index = count($this->data) > 0 ? count($this->data) - 1 : 0;
+        return ComplexCommand::fromString(
+            $this->data[$index]['complexCommandData']
+        );
     }
 
     public function orientation(): Orientation

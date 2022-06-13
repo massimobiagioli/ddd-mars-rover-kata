@@ -14,7 +14,7 @@ class SendPrimitiveCommandHandler
 {
     public function __construct(
         private MarsRoverRepository $marsRoverRepository,
-        private RouteService $routeService,
+        private RouteService        $routeService,
         private LoggerInterface     $logger
     )
     {
@@ -52,7 +52,7 @@ class SendPrimitiveCommandHandler
 
         if ($route->hasObstacle()) {
             $this->logger->warning("Mars Rover with id: {$sendPrimitiveCommand->getId()->toString()} has detected an obstacle!!!");
-            $marsRover->detectObstacle();
+            $marsRover->detectObstacle($route);
             $this->marsRoverRepository->store($marsRover);
             return;
         }
